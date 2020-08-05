@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/costsListText"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@id/checkBoxesList"
+        android:gravity="center_horizontal"
+        android:paddingTop="20dp"
+        android:text="@string/cost_name"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        android:id="@+id/costsListTextAdd"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_below="@id/costsListText"
+        android:layout_marginBottom="40dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_check_box_body">
+
+            <EditText
+                android:id="@+id/cost_amount_add"
+                android:inputType="numberDecimal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_text_area"
+                android:hint="@string/cost_amount" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="@drawable/rounded_check_box_body">
+
+            <EditText
+                android:id="@+id/cost_details_add"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_text_area"
+                android:hint="@string/cost_details" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="@drawable/rounded_check_box_body">
+
+            <EditText
+                android:id="@+id/cost_date_add"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_text_area"
+                android:hint="@string/cost_date" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/costList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/costsListTextAdd"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10sp"
+        tools:listitem="@layout/orders_activity_list_content_costs" />
+
+</LinearLayout>

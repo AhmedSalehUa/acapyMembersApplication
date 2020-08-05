@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.acpay.acapymembers.floadingCell.FoldingCell
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/orders_activity_list_content" />
+
+    <!-- TITLE (FOLDED) LAYOUT (MUST BE AT LEAST 2x times SMALLER than content layout above) -->
+    <include layout="@layout/orders_activity_list_header" />
+</com.acpay.acapymembers.floadingCell.FoldingCell>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/pullToRefresh"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="60dp">
+
+
+    <ListView
+        android:id="@+id/order_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/transparent"
+        android:padding="16dp" />
+    <TextView
+        android:id="@+id/no_books"
+        android:layout_width="wrap_content"
+        android:layout_alignBottom="@id/lood_progress"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+    <ProgressBar
+        android:id="@+id/lood_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

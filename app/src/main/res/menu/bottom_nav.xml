@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:clickable="false"
+    android:contextClickable="false">
+
+    <item
+        android:id="@+id/nav_bot_order"
+        android:icon="@drawable/ic_orders"
+        android:title="@string/nav_bot_order"></item>
+    <item
+        android:id="@+id/nav_bot_messege"
+        android:icon="@drawable/ic_messege"
+        android:title="@string/nav_bot_messege"></item>
+
+</menu>
