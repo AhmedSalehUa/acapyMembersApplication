@@ -43,8 +43,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class MessegeFragment extends Fragment {
@@ -76,6 +78,9 @@ public class MessegeFragment extends Fragment {
     private static final int RC_PHOTO_PICKER = 2;
     public static final int RC_SIGN_IN = 1;
 
+    String DateNow;
+    String TimeNow;
+
     public MessegeFragment() {
         super();
     }
@@ -88,13 +93,14 @@ public class MessegeFragment extends Fragment {
 
 
         mFirebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mFirebaseAuth.getCurrentUser();
         mFirebaseStorage = FirebaseStorage.getInstance();
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("messages");
+        mDatabaseReference = mFirebaseDatabase.getReference().child("messages").child(user.getDisplayName());
 
         mChatPhotosStorageReference = mFirebaseStorage.getReference().child("chat_photo");
-        FirebaseUser user = mFirebaseAuth.getCurrentUser();
+
         // Initialize references to views
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         mMessageListView = (ListView) rootView.findViewById(R.id.messageListView);
@@ -115,7 +121,6 @@ public class MessegeFragment extends Fragment {
 
             }
         });
-
 
 
         mMessageEditText.addTextChangedListener(new TextWatcher() {
@@ -142,7 +147,9 @@ public class MessegeFragment extends Fragment {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Message friendlyMessage = new Message(mMessageEditText.getText().toString(), mUsername, null);
+                DateNow = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                TimeNow = new SimpleDateFormat("hh:mm").format(new Date());
+                Message friendlyMessage = new Message(mMessageEditText.getText().toString(), mUsername, null, DateNow, TimeNow);
                 mDatabaseReference.push().setValue(friendlyMessage);
                 mMessageEditText.setText("");
             }
@@ -208,7 +215,7 @@ public class MessegeFragment extends Fragment {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     String imageUrl = uri.toString();
-                                    Message friendlyMessage = new Message(null, mUsername, imageUrl);
+                                    Message friendlyMessage = new Message(null, mUsername, imageUrl, DateNow, TimeNow);
                                     mDatabaseReference.push().setValue(friendlyMessage);
                                 }
                             });

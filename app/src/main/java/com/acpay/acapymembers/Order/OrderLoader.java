@@ -1,12 +1,10 @@
-package com.acpay.acapymembers.oreder;
+package com.acpay.acapymembers.Order;
 
 import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.loader.content.AsyncTaskLoader;
-
-import com.acpay.acapymembers.JasonReponser;
 
 import java.util.List;
 

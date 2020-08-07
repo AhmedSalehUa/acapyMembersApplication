@@ -2,10 +2,8 @@ package com.acpay.acapymembers.bottomNavigationFragement;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,12 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.acpay.acapymembers.JasonReponser;
 import com.acpay.acapymembers.R;
-import com.acpay.acapymembers.oreder.OrderDone;
-import com.acpay.acapymembers.oreder.progress.Utility;
-import com.acpay.acapymembers.oreder.progress.boxes;
-import com.acpay.acapymembers.oreder.progress.boxesAdapter;
-import com.acpay.acapymembers.oreder.progress.costs;
-import com.acpay.acapymembers.oreder.progress.costsAdapter;
+import com.acpay.acapymembers.Order.progress.costs;
+import com.acpay.acapymembers.Order.progress.costsAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;

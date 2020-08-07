@@ -1,7 +1,6 @@
-package com.acpay.acapymembers.oreder.progress;
+package com.acpay.acapymembers.Order.progress;
 
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 
 public class boxes {
     private String name;

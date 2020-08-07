@@ -1,4 +1,4 @@
-package com.acpay.acapymembers.oreder.progress;
+package com.acpay.acapymembers.Order.progress;
 
 public class costs {
    private String amount;

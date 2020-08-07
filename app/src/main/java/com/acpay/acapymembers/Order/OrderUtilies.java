@@ -1,10 +1,6 @@
-package com.acpay.acapymembers.oreder;
+package com.acpay.acapymembers.Order;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.acpay.acapymembers.LocationProvider.HttpsTrustManager;
 
@@ -13,9 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

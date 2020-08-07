@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:scaleX="2"
-            android:scaleY="3"
+            android:scaleY="2"
             app:buttonTint="@color/bgContent" />
     </RelativeLayout>
 
@@ -40,15 +40,21 @@
             android:textAlignment="center"
             tools:ignore="RtlCompat" />
 
-        <EditText
-            android:id="@+id/chechbox_note"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textField"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_text_area"
-            android:gravity="center_horizontal"
-            android:textAlignment="center" />
-    </LinearLayout>
+            android:hint="@string/label"
+            app:startIconContentDescription="@string/content_description_end_icon"
+            app:startIconDrawable="@drawable/ic_baseline_event_note_24">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/chechbox_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -117,4 +117,8 @@
     <string name="cost_name">تنقلات</string>
     <string name="request_btn_cost_text">انتقالات</string>
     <string name="cost_fragment">انتقالات</string>
+    <string name="content_save_progress">حفظ التغيرات</string>
+    <string name="label">ملاحظات</string>
+    <string name="content_description_end_icon">ملاحظات</string>
+    <string name="noProgress">لايوجد خطوات</string>
 </resources>

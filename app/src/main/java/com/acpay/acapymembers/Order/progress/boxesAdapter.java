@@ -1,4 +1,4 @@
-package com.acpay.acapymembers.oreder.progress;
+package com.acpay.acapymembers.Order.progress;
 
 import android.app.Activity;
 import android.content.Context;
