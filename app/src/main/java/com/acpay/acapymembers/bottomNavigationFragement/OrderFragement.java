@@ -39,8 +39,7 @@ import java.util.List;
 
 public class OrderFragement extends Fragment implements LoaderCallbacks<List<Order>> {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    User usera1 = new User(user.getDisplayName(), user.getUid());
-    String uid = usera1.getUserId();
+
     private String ApiUrl;
     OrderAdapter adapter;
     ListView theListView;
@@ -48,7 +47,7 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
     private static final int ORDER_LOADER_ID = 1;
 
     public OrderFragement() {
-        ApiUrl = " https://www.app.acapy-trade.com/orders.php?type=ok" + "&uid=" + this.uid;
+        ApiUrl = " https://www.app.acapy-trade.com/orders.php?type=ok" + "&uid=" + user.getUid();
         Log.w("call order fragment ", ApiUrl);
     }
 

@@ -18,6 +18,7 @@ package com.acpay.acapymembers;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     private BottomNavigationView bottomNav;
-    String user_id;
+
 
     @Override
     protected void onDestroy() {
@@ -113,18 +114,16 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_EXTERNAL_STORAGE)).withListener(new MultiplePermissionsListener() {
             @Override
             public void onPermissionsChecked(MultiplePermissionsReport report) {
-                Log.e("permissions","done");
+                Log.e("permissions", "done");
             }
 
             @Override
             public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                Log.e("permissionsFails",permissions.toString());
+                Log.e("permissionsFails", permissions.toString());
             }
         }).check();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        User user1 = new User(user.getDisplayName(), user.getUid());
 
-        user_id = user1.getUserId();
 
         checkPermission();
 
@@ -150,26 +149,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        Log.w("id", user_id);
+        Log.w("id", user.getUid());
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("main", "getInstanceId failed", task.getException());
-                            return;
-                        }
 
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-
-                        // Log and toast
-                        String msg = getString(R.string.msg_token_fmt, token);
-                        Log.d("token", token);
-                        // Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
 
     }
 
@@ -198,10 +180,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startService() {
-        Intent serviceIntent = new Intent(this, BackgroundService.class);
-        ContextCompat.startForegroundService(this, serviceIntent);
+        if (isMyServiceRunning(BackgroundService.class)) {
+        } else {
+            Intent serviceIntent = new Intent(this, BackgroundService.class);
+            ContextCompat.startForegroundService(this, serviceIntent);
+        }
     }
 
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void stopService() {
         Intent intent = new Intent(this, BackgroundService.class);

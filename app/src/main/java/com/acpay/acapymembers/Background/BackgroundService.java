@@ -59,6 +59,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.acpay.acapymembers.Background.App.CHANNEL_ID;
@@ -68,9 +69,10 @@ public class BackgroundService extends Service implements LocationListener {
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
+    private DatabaseReference mOrdersReference;
 
-      private ChildEventListener mChildEventListener;
-
+    private ChildEventListener mChildEventListener;
+    private ChildEventListener mOrdersEventListener;
 
 
     private boolean getLocationOnOf = false;
@@ -108,6 +110,7 @@ public class BackgroundService extends Service implements LocationListener {
 
     protected LocationManager locationManager;
     FirebaseUser user;
+
     @Override
     public void onCreate() {
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -116,6 +119,7 @@ public class BackgroundService extends Service implements LocationListener {
         fetchConfig();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference().child("messages").child(user.getDisplayName());
+        mOrdersReference = mFirebaseDatabase.getReference().child("orders").child(user.getUid());
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -152,6 +156,34 @@ public class BackgroundService extends Service implements LocationListener {
             }
         };
         mDatabaseReference.addChildEventListener(mChildEventListener);
+
+        mOrdersEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                notifyME("Orders","You Have New Order");
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                notifyME("Orders","Your Order Has Changed");
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        mOrdersReference.addChildEventListener(mOrdersEventListener);
         super.onCreate();
     }
 
@@ -176,6 +208,7 @@ public class BackgroundService extends Service implements LocationListener {
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
+
     private void firebaseRemoteConfig() {
         mRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
@@ -251,8 +284,7 @@ public class BackgroundService extends Service implements LocationListener {
                 if (longitude == 0.0 || latitude == 0.0 || !net || !gps) {
                     getLocation();
                     if (!gps) {
-                        Toast.makeText(BackgroundService.this, "gps is disabled", Toast.LENGTH_SHORT).show();
-                        getLocation();
+                         getLocation();
                     }
                     if (!net) {
                         ConnectivityManager cm =
@@ -264,8 +296,7 @@ public class BackgroundService extends Service implements LocationListener {
                         if (isConnected) {
                             getLocation();
                         } else {
-                            Toast.makeText(BackgroundService.this, "Network is disabled", Toast.LENGTH_SHORT).show();
-                            getLocation();
+                             getLocation();
                         }
                     }
                 } else {
@@ -371,12 +402,10 @@ public class BackgroundService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-//        IntentFilter filter=new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-//        filter.addAction(Intent.LOCA);
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        String api = "https://www.app.acapy-trade.com/locationInserter.php?id="+user.getUid()
-                + "&latitude="+latitude + "&longlatitude="+longitude+"&date="+new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
+        String api = "https://www.app.acapy-trade.com/locationInserter.php?id=" + user.getUid()
+                + "&latitude=" + latitude + "&longlatitude=" + longitude + "&date=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).format(new Date());
         final JasonReponser updateProgress = new JasonReponser();
         updateProgress.setFinish(false);
         updateProgress.execute(api);

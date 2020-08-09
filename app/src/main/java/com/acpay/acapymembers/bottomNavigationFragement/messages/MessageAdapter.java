@@ -50,11 +50,12 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             photoImageView.setVisibility(View.GONE);
             messageTextView.setText(message.getText());
         }
-        authorTextView.setText("Me");
+
         dateTextView.setText(message.getDate());
         timeTextView.setText(message.getTime());
         LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.massege_container);
         if (message.getName().equals(userName)) {
+            authorTextView.setText("Me");
             linearLayout.setBackground(getContext().getResources().getDrawable(R.drawable.shape_bg_outgoing_bubble));
             authorTextView.setTextColor(getContext().getResources().getColor(R.color.massegeMeSender));
             dateTextView.setTextColor(getContext().getResources().getColor(R.color.massegeMeSender));
@@ -62,11 +63,11 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             linearLayout.setGravity(Gravity.RIGHT);
 
         } else {
+            authorTextView.setText(message.getName());
             linearLayout.setBackground(getContext().getResources().getDrawable(R.drawable.shape_bg_incoming_bubble));
             authorTextView.setTextColor(getContext().getResources().getColor(R.color.massegeToSender));
             dateTextView.setTextColor(getContext().getResources().getColor(R.color.massegeToSender));
             timeTextView.setTextColor(getContext().getResources().getColor(R.color.massegeToSender));
-
             linearLayout.setGravity(Gravity.LEFT);
 
         }
