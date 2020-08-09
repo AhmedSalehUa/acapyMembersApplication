@@ -77,8 +77,9 @@ public class LoginPage extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
-                mDatabaseReference = mFirebaseDatabase.getReference().child("users").child(user.getDisplayName());
+
                 if (user != null) {
+                    mDatabaseReference = mFirebaseDatabase.getReference().child("users").child(user.getDisplayName());
                     mDatabaseReference.removeValue();
                     User Fireuser = new User(user.getDisplayName(),user.getUid(),token);
                     mDatabaseReference.push().setValue(Fireuser);
