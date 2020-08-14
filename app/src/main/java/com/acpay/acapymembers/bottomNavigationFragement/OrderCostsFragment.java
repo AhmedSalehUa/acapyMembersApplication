@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderCostsFragment extends AppCompatActivity {
 
@@ -86,7 +87,7 @@ public class OrderCostsFragment extends AppCompatActivity {
             }
         });
         TextView co = (TextView) findViewById(R.id.cost_date_add);
-        co.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        co.setText(new SimpleDateFormat("yyyy-MM-dd",Locale.ENGLISH).format(new Date()));
     }
 
     private List<costs> fetchCostsJason(String costsJasonResponse) {
@@ -175,7 +176,7 @@ public class OrderCostsFragment extends AppCompatActivity {
                     costsAdapter.add(new costs(text.getText().toString(), note.getText().toString(), co.getText().toString()));
                     text.setText("");
                     note.setText("");
-                    co.setText(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                    co.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date()));
                 }
                 // Utility.setDynamicHeight(costsList);
                 return true;

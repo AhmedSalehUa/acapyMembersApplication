@@ -8,16 +8,18 @@ public class Message {
     private String photoUrl;
     private String date;
     private String time;
+    private boolean seen;
 
     public Message() {
     }
 
-    public Message(String text, String name, String photoUrl, String date, String time) {
+    public Message(String text, String name, String photoUrl, String date, String time,boolean seen) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
         this.date = date;
         this.time = time;
+        this.seen = seen;
     }
 
     public String getText() {
@@ -58,5 +60,13 @@ public class Message {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
     }
 }

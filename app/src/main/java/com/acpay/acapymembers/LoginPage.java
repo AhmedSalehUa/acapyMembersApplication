@@ -41,7 +41,6 @@ import java.util.List;
 public class LoginPage extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
-    private ChildEventListener mChildEventListener;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     public static final int RC_SIGN_IN = 1;
@@ -79,11 +78,13 @@ public class LoginPage extends AppCompatActivity {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
+
                     mDatabaseReference = mFirebaseDatabase.getReference().child("users").child(user.getDisplayName());
                     mDatabaseReference.removeValue();
-                    User Fireuser = new User(user.getDisplayName(),user.getUid(),token);
-                    mDatabaseReference.push().setValue(Fireuser);
+                    User FireUser = new User(user.getDisplayName(),user.getUid(),token,"offline");
+                    mDatabaseReference.push().setValue(FireUser);
                     Intent intent = new Intent(LoginPage.this, MainActivity.class);
+                    intent.putExtra("token",token);
                     startActivity(intent);
                 } else {
                     List<AuthUI.IdpConfig> providers = Arrays.asList(

@@ -69,6 +69,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.karumi.dexter.Dexter;
@@ -150,8 +152,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Log.w("id", user.getUid());
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
 
+        String type=this.getIntent().getStringExtra("type");
+        if (type != null){
+            if (type.equals("notification")){
+                bottomNav.setSelectedItemId(R.id.nav_bot_messege);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MessegeFragment()).commit();
+            }
+        }else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
+
+        }
 
     }
 
@@ -235,5 +246,24 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
+    }
+    private void status(String status){
+        String token = this.getIntent().getStringExtra("token");
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getDisplayName());
+        mDatabaseReference.removeValue();
+        User Fireuser = new User(firebaseUser.getDisplayName(), firebaseUser.getUid(), token,status);
+        mDatabaseReference.push().setValue(Fireuser);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        status("offline");
     }
 }

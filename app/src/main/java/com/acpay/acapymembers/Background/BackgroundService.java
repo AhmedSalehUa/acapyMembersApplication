@@ -118,44 +118,9 @@ public class BackgroundService extends Service implements LocationListener {
         firebaseRemoteConfig();
         fetchConfig();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference().child("messages").child(user.getDisplayName());
+
         mOrdersReference = mFirebaseDatabase.getReference().child("orders").child(user.getUid());
-        mChildEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Message message = snapshot.getValue(Message.class);
-                if (message.getName() == user.getDisplayName()) {
 
-                } else {
-                    notifyME(message.getName(), message.getText());
-                }
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Message message = snapshot.getValue(Message.class);
-                if (message.getName() == user.getDisplayName()) {
-
-                } else {
-                    notifyME(message.getName(), message.getText());
-                }
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        };
-        mDatabaseReference.addChildEventListener(mChildEventListener);
 
         mOrdersEventListener = new ChildEventListener() {
             @Override
