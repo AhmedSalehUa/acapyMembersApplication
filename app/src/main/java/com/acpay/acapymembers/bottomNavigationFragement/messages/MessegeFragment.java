@@ -28,6 +28,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 
 import com.acpay.acapymembers.R;
+import com.acpay.acapymembers.SendNotification;
+import com.acpay.acapymembers.Tokens;
 import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.APIService;
 import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Client;
 import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Data;
@@ -88,7 +90,7 @@ public class MessegeFragment extends Fragment {
 
     private String mUsername;
     APIService apiService;
-    Token token;
+
     private static final int RC_PHOTO_PICKER = 2;
     public static final int RC_SIGN_IN = 1;
 
@@ -96,8 +98,10 @@ public class MessegeFragment extends Fragment {
     String TimeNow;
     FirebaseUser user;
 
-    String manager1="Samaan";
-    String manager2="Ireny";
+    String manager1 = "Samaan";
+    String manager2 = "Ireny";
+    Tokens tok;
+
     public MessegeFragment() {
         super();
     }
@@ -166,10 +170,11 @@ public class MessegeFragment extends Fragment {
             public void onClick(View view) {
                 DateNow = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date());
                 TimeNow = new SimpleDateFormat("hh:mm", Locale.ENGLISH).format(new Date());
-                Message friendlyMessage = new Message(mMessageEditText.getText().toString(), mUsername, null, DateNow, TimeNow,false);
+                Message friendlyMessage = new Message(mMessageEditText.getText().toString(), user.getDisplayName(), null, DateNow, TimeNow, false);
                 mDatabaseReference.push().setValue(friendlyMessage);
-                sendNotifiaction(manager1, mUsername, mMessageEditText.getText().toString());
-                sendNotifiaction(manager2, mUsername, mMessageEditText.getText().toString());
+                SendNotification send1 = new SendNotification(getContext(),manager1, user.getDisplayName(), mMessageEditText.getText().toString());
+                SendNotification send2 = new SendNotification(getContext(),manager2, user.getDisplayName(), mMessageEditText.getText().toString());
+
                 mMessageEditText.setText("");
             }
         });
@@ -201,14 +206,15 @@ public class MessegeFragment extends Fragment {
         seenMessage();
         return rootView;
     }
-    private void seenMessage(){
+
+    private void seenMessage() {
 
         seenListener = mDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message chat = snapshot.getValue(Message.class);
-                    if (!chat.getName().equals(mUsername)){
+                    if (!chat.getName().equals(mUsername)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("seen", true);
                         snapshot.getRef().updateChildren(hashMap);
@@ -222,6 +228,7 @@ public class MessegeFragment extends Fragment {
             }
         });
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -257,9 +264,9 @@ public class MessegeFragment extends Fragment {
                                     String imageUrl = uri.toString();
                                     DateNow = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date());
                                     TimeNow = new SimpleDateFormat("hh:mm", Locale.ENGLISH).format(new Date());
-                                    Message friendlyMessage = new Message(null, mUsername, imageUrl, DateNow, TimeNow,false);
-                                    sendNotifiaction(manager1, mUsername, mMessageEditText.getText().toString());
-                                    sendNotifiaction(manager2, mUsername, mMessageEditText.getText().toString());
+                                    Message friendlyMessage = new Message(null, user.getDisplayName(), imageUrl, DateNow, TimeNow, false);
+                                    SendNotification send1 = new SendNotification(getContext(),manager1, user.getDisplayName(), "photo");
+                                    SendNotification send2 = new SendNotification(getContext(),manager2, user.getDisplayName(), "photo");
                                     mDatabaseReference.push().setValue(friendlyMessage);
                                 }
                             });
@@ -333,58 +340,5 @@ public class MessegeFragment extends Fragment {
         super.onPause();
 
     }
-    private void sendNotifiaction(String receiver, final String username, final String message) {
 
-        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("users").child(receiver);
-        ChildEventListener mChildEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                token = snapshot.getValue(Token.class);
-                Log.e("b",token.getToken());
-                Data data = new Data(user.getDisplayName(), message);
-
-                Sender sender = new Sender(data, token.getToken());
-
-                apiService.sendNotification(sender)
-                        .enqueue(new Callback<MyResponse>() {
-                            @Override
-                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                                if (response.code() == 200) {
-                                    if (response.body().success != 1) {
-                                        Toast.makeText(getContext(), "Failed!", Toast.LENGTH_SHORT).show();
-                                    }else {
-                                        Log.e("b","ok");
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<MyResponse> call, Throwable t) {
-
-                            }
-                        });
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                token = snapshot.getValue(Token.class);
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        tokens.addChildEventListener(mChildEventListener);
-    }
 }

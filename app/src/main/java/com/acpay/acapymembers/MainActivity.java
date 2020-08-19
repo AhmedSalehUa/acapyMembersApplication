@@ -248,22 +248,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void status(String status){
-        String token = this.getIntent().getStringExtra("token");
+
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getDisplayName());
         mDatabaseReference.removeValue();
-        User Fireuser = new User(firebaseUser.getDisplayName(), firebaseUser.getUid(), token,status);
+        User Fireuser = new User(firebaseUser.getDisplayName(), firebaseUser.getUid(),status);
         mDatabaseReference.push().setValue(Fireuser);
     }
     @Override
     protected void onResume() {
         super.onResume();
-        status("online");
+       status("online");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        status("offline");
+       status("offline");
     }
 }

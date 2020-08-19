@@ -45,6 +45,7 @@ public class LoginPage extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     public static final int RC_SIGN_IN = 1;
     String token;
+    Tokens tokens;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,7 +65,42 @@ public class LoginPage extends AppCompatActivity {
 
                         // Get new Instance ID token
                         token = task.getResult().getToken();
+                        tokens = new Tokens(token);
 
+
+                        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+                            @Override
+                            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                                final FirebaseUser user = firebaseAuth.getCurrentUser();
+                                if (user != null) {
+
+                                    mDatabaseReference = mFirebaseDatabase.getReference().child("users").child(user.getDisplayName());
+                                    mDatabaseReference.removeValue();
+                                    User Fireuser = new User(user.getDisplayName(), user.getUid(), "offline");
+                                    mDatabaseReference.push().setValue(Fireuser);
+
+                                    DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("tokens").child(user.getDisplayName());
+                                    mDatabaseReference.removeValue();
+                                    mDatabaseReference.push().setValue(tokens);
+
+                                    Intent intent = new Intent(LoginPage.this, MainActivity.class);
+
+                                    startActivity(intent);
+                                } else {
+                                    List<AuthUI.IdpConfig> providers = Arrays.asList(
+                                            new AuthUI.IdpConfig.EmailBuilder().build(),
+                                            new AuthUI.IdpConfig.PhoneBuilder().build());
+                                    startActivityForResult(
+                                            AuthUI.getInstance()
+                                                    .createSignInIntentBuilder()
+                                                    .setAvailableProviders(providers).setIsSmartLockEnabled(false)
+                                                    .build(),
+                                            RC_SIGN_IN);
+                                }
+                            }
+                        };
+
+                        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
                         // Log and toast
                         String msg = getString(R.string.msg_token_fmt, token);
                         Log.d("token", token);
@@ -72,39 +108,12 @@ public class LoginPage extends AppCompatActivity {
                     }
                 });
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                final FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if (user != null) {
-
-                    mDatabaseReference = mFirebaseDatabase.getReference().child("users").child(user.getDisplayName());
-                    mDatabaseReference.removeValue();
-                    User FireUser = new User(user.getDisplayName(),user.getUid(),token,"offline");
-                    mDatabaseReference.push().setValue(FireUser);
-                    Intent intent = new Intent(LoginPage.this, MainActivity.class);
-                    intent.putExtra("token",token);
-                    startActivity(intent);
-                } else {
-                    List<AuthUI.IdpConfig> providers = Arrays.asList(
-                            new AuthUI.IdpConfig.EmailBuilder().build(),
-                            new AuthUI.IdpConfig.PhoneBuilder().build());
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setAvailableProviders(providers).setIsSmartLockEnabled(false)
-                                    .build(),
-                            RC_SIGN_IN);
-                }
-            }
-        };
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     protected void onStart() {
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        // mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         super.onStart();
     }
 

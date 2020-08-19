@@ -34,6 +34,7 @@ import com.acpay.acapymembers.Order.progress.boxesAdapter;
 import com.acpay.acapymembers.Order.progress.progressReponser;
 import com.acpay.acapymembers.Order.saveProgressReponser;
 import com.acpay.acapymembers.R;
+import com.acpay.acapymembers.SendNotification;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -72,6 +73,8 @@ public class OrderDetailsFragement extends Fragment {
     TextView boxesListEmpty;
     ArrayList<boxes> list;
 
+    String manager1 = "Samaan";
+    String manager2 = "Ireny";
     Order order;
     String orderString;
 
@@ -201,7 +204,7 @@ public class OrderDetailsFragement extends Fragment {
                 final EditText input = new EditText(getContext());
                 input.setLayoutParams(lp);
                 input.setGravity(Gravity.TOP | Gravity.LEFT);
-                input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
                 input.setLines(1);
                 input.setMaxLines(1);
                 input.setText(order.getNotes());
@@ -218,6 +221,9 @@ public class OrderDetailsFragement extends Fragment {
                                 if (orderDone.isFinish()) {
                                     if (orderDone.getResponse().equals("1")) {
                                         Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT).show();
+                                        SendNotification send1 = new SendNotification(getContext(),manager1, user.getDisplayName(), "تم اضافة ملاحظة");
+                                        SendNotification send2 = new SendNotification(getContext(),manager2, user.getDisplayName(), "تم اضافة ملاحظة");
+
                                         onBackPressed();
                                     } else {
                                         Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
@@ -259,6 +265,9 @@ public class OrderDetailsFragement extends Fragment {
                                 String res = updateProgress.getUserId();
                                 if (!res.equals("0")) {
                                     Toast.makeText(getContext(), "Saved", Toast.LENGTH_LONG).show();
+                                    SendNotification send1 = new SendNotification(getContext(),manager1, user.getDisplayName(), "تم تحديث الخطوات");
+                                    SendNotification send2 = new SendNotification(getContext(),manager2, user.getDisplayName(), "تم تحديث الخطوات");
+
                                     setBoxListDetails();
 
                                 } else {
@@ -301,6 +310,9 @@ public class OrderDetailsFragement extends Fragment {
                                         if (orderDone.isFinish()) {
                                             if (orderDone.getResponse().equals("1")) {
                                                 Toast.makeText(getContext(), "Pended", Toast.LENGTH_SHORT).show();
+                                                SendNotification send1 = new SendNotification(getContext(),manager1, user.getDisplayName(), "تم تاجيل الاوردر");
+                                                SendNotification send2 = new SendNotification(getContext(),manager2, user.getDisplayName(), "تم تاجيل الاوردر");
+
                                                 onBackPressed();
                                             } else {
                                                 Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
@@ -340,6 +352,9 @@ public class OrderDetailsFragement extends Fragment {
                                         if (orderDone.isFinish()) {
                                             if (orderDone.getResponse().equals("1")) {
                                                 Toast.makeText(getContext(), "تم الحفظ", Toast.LENGTH_SHORT).show();
+                                                SendNotification send1 = new SendNotification(getContext(),manager1, user.getDisplayName(), "انتهى الاوردر");
+                                                SendNotification send2 = new SendNotification(getContext(),manager2, user.getDisplayName(), "انتهى الاوردر");
+
                                                 onBackPressed();
                                             } else {
                                                 Toast.makeText(getContext(), "خطا", Toast.LENGTH_SHORT).show();

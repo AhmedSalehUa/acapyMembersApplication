@@ -3,8 +3,7 @@ package com.acpay.acapymembers;
 public class User {
     public String username;
     public String userId;
-    public String token;
-    private String status;
+     private String status;
 
     public String getUserId() {
         return userId;
@@ -18,16 +17,16 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username, String userId, String token) {
+    public User(String username, String userId ) {
         this.username = username;
         this.userId = userId;
-        this.token = token;
+
     }
 
-    public User(String username, String userId, String token, String status) {
+    public User(String username, String userId, String status) {
         this.username = username;
         this.userId = userId;
-        this.token = token;
+
         this.status = status;
     }
 
@@ -39,13 +38,6 @@ public class User {
         this.username = username;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public String getStatus() {
         return status;
