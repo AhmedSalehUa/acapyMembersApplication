@@ -25,6 +25,7 @@
             android:layout_alignParentBottom="true"
             android:background="?android:attr/windowBackground"
             android:clickable="false"
+            app:labelVisibilityMode="auto"
             app:itemIconTint="@drawable/bot_nave_color"
             app:itemTextColor="@drawable/bot_nave_color"
             app:menu="@menu/bottom_nav" />

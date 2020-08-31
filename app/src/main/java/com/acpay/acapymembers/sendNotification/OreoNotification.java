@@ -1,4 +1,4 @@
-package com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification;
+package com.acpay.acapymembers.sendNotification;
 
 import android.annotation.TargetApi;
 import android.app.Notification;

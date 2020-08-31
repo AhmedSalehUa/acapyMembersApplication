@@ -1,5 +1,5 @@
 
-package com.acpay.acapymembers.bottomNavigationFragement.messages;
+package com.acpay.acapymembers.bottomNavigationFragement.Messages;
 
 public class Message {
 

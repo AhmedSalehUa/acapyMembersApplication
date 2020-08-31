@@ -12,10 +12,8 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.acpay.acapymembers.Background.BackgroundService;
 import com.acpay.acapymembers.MainActivity;
 import com.acpay.acapymembers.R;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.MessegeFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -60,7 +58,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             JSONObject a = new JSONObject(remoteMessage.getData());
             try {
-                   sendNotification(a.getString("user"),a.getString("body"));
+                   sendNotification(a.getString("user"),a.getString("body"),a.getString("method"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -82,27 +80,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
     // [END receive_message]
-    private void notifyME(String sender, String message) {
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(MyFirebaseMessagingService.this, "0")
-                        .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                        .setContentTitle(sender)
-                        .setContentText(message)
-                        .setAutoCancel(true);
 
-        NotificationManager notificationManager =
-                (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("0",
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-    }
 
 
     @Override
@@ -141,11 +119,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // TODO: Implement this method to send token to your app server.
     }
 
+    Intent intent;
+    private void sendNotification(String sender, String message,String method) {
 
-    private void sendNotification(String sender, String message) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("type","notification");
+        switch (method){
+            case "message":
+                intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("type","message");
+                break;
+            case "order":
+                intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("type","order");
+                break;
+            case "costs":
+                intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("type","costs");
+                break;
+        }
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

@@ -17,62 +17,34 @@
 package com.acpay.acapymembers;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
-import android.app.PendingIntent;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.acpay.acapymembers.Background.BackgroundService;
-import com.acpay.acapymembers.Background.GeofenceBroadcastReceiver;
-import com.acpay.acapymembers.LocationProvider.GPSTracker;
-import com.acpay.acapymembers.bottomNavigationFragement.OrderFragement;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.MessegeFragment;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.internal.Constants;
-import com.google.android.gms.location.FusedLocationProviderApi;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingClient;
-import com.google.android.gms.location.GeofencingRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlacePicker;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.acpay.acapymembers.bottomNavigationFragement.Costs.TransitionFragement;
+import com.acpay.acapymembers.bottomNavigationFragement.Orders.OrderFragement;
+import com.acpay.acapymembers.bottomNavigationFragement.Messages.MessegeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -96,13 +68,15 @@ public class MainActivity extends AppCompatActivity {
 
         super.onDestroy();
     }
-
+    int BottomMargin;
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        FrameLayout framaeLayouat = (FrameLayout) findViewById(R.id.fragment_container);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) framaeLayouat.getLayoutParams();
+        BottomMargin = params.bottomMargin;
         Dexter.withActivity(this).withPermissions(Arrays.asList(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION,
@@ -147,19 +121,35 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_bot_messege:
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MessegeFragment()).commit();
                         break;
+                    case R.id.nav_bot_costs:
+                        FrameLayout framaeLayouat = (FrameLayout) findViewById(R.id.fragment_container);
+                        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) framaeLayouat.getLayoutParams();
+                        params.setMargins(0, 0, 0, BottomMargin);
+                        framaeLayouat.setLayoutParams(params);
+
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TransitionFragement(framaeLayouat)).commit();
+                        break;
                 }
                 return true;
             }
         });
         Log.w("id", user.getUid());
 
-        String type=this.getIntent().getStringExtra("type");
-        if (type != null){
-            if (type.equals("notification")){
+        String type = this.getIntent().getStringExtra("type");
+        if (type != null) {
+            if (type.equals("message")) {
                 bottomNav.setSelectedItemId(R.id.nav_bot_messege);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MessegeFragment()).commit();
+            } else if (type.equals("order")) {
+                bottomNav.setSelectedItemId(R.id.nav_bot_order);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
+            } else if (type.equals("costs")) {
+                bottomNav.setSelectedItemId(R.id.nav_bot_costs);
+
+
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TransitionFragement(framaeLayouat)).commit();
             }
-        }else {
+        } else {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
 
         }
@@ -247,23 +237,25 @@ public class MainActivity extends AppCompatActivity {
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
-    private void status(String status){
+
+    private void status(String status) {
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference mDatabaseReference = FirebaseDatabase.getInstance().getReference("users").child(firebaseUser.getDisplayName());
         mDatabaseReference.removeValue();
-        User Fireuser = new User(firebaseUser.getDisplayName(), firebaseUser.getUid(),status);
+        User Fireuser = new User(firebaseUser.getDisplayName(), firebaseUser.getUid(), status);
         mDatabaseReference.push().setValue(Fireuser);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
-       status("online");
+        status("online");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-       status("offline");
+        status("offline");
     }
 }

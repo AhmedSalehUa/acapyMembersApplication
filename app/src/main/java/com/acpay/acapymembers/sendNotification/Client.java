@@ -1,4 +1,4 @@
-package com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification;
+package com.acpay.acapymembers.sendNotification;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

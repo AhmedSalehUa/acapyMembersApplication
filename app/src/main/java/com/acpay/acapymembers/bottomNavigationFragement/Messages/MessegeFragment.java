@@ -1,12 +1,8 @@
-package com.acpay.acapymembers.bottomNavigationFragement.messages;
+package com.acpay.acapymembers.bottomNavigationFragement.Messages;
 
 import android.app.Activity;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -24,18 +20,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.acpay.acapymembers.R;
-import com.acpay.acapymembers.SendNotification;
+import com.acpay.acapymembers.sendNotification.Data;
+import com.acpay.acapymembers.sendNotification.SendNotification;
 import com.acpay.acapymembers.Tokens;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.APIService;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Client;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Data;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.MyResponse;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Sender;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Token;
+import com.acpay.acapymembers.sendNotification.APIService;
+import com.acpay.acapymembers.sendNotification.Client;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -59,10 +52,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MessegeFragment extends Fragment {
     private FirebaseDatabase mFirebaseDatabase;
@@ -172,8 +161,9 @@ public class MessegeFragment extends Fragment {
                 TimeNow = new SimpleDateFormat("hh:mm", Locale.ENGLISH).format(new Date());
                 Message friendlyMessage = new Message(mMessageEditText.getText().toString(), user.getDisplayName(), null, DateNow, TimeNow, false);
                 mDatabaseReference.push().setValue(friendlyMessage);
-                SendNotification send1 = new SendNotification(getContext(),manager1, user.getDisplayName(), mMessageEditText.getText().toString());
-                SendNotification send2 = new SendNotification(getContext(),manager2, user.getDisplayName(), mMessageEditText.getText().toString());
+                Data data = new Data(user.getDisplayName(), mMessageEditText.getText().toString(), "message");
+                SendNotification send1 = new SendNotification(getContext(), manager1, data);
+                SendNotification send2 = new SendNotification(getContext(), manager2, data);
 
                 mMessageEditText.setText("");
             }
@@ -204,6 +194,7 @@ public class MessegeFragment extends Fragment {
         mMessageAdapter = new MessageAdapter(getContext(), R.layout.message_activity_item, friendlyMessages, user.getDisplayName());
         mMessageListView.setAdapter(mMessageAdapter);
         seenMessage();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("الرسائل");
         return rootView;
     }
 
@@ -265,8 +256,9 @@ public class MessegeFragment extends Fragment {
                                     DateNow = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date());
                                     TimeNow = new SimpleDateFormat("hh:mm", Locale.ENGLISH).format(new Date());
                                     Message friendlyMessage = new Message(null, user.getDisplayName(), imageUrl, DateNow, TimeNow, false);
-                                    SendNotification send1 = new SendNotification(getContext(),manager1, user.getDisplayName(), "photo");
-                                    SendNotification send2 = new SendNotification(getContext(),manager2, user.getDisplayName(), "photo");
+                                    Data sa=new Data(user.getDisplayName(), "photo","message");
+                                    SendNotification send1 = new SendNotification(getContext(), manager1, sa);
+                                    SendNotification send2 = new SendNotification(getContext(), manager2, sa);
                                     mDatabaseReference.push().setValue(friendlyMessage);
                                 }
                             });
@@ -299,6 +291,7 @@ public class MessegeFragment extends Fragment {
 
                 Message message = snapshot.getValue(Message.class);
                 mMessageAdapter.add(message);
+                mMessageAdapter.notifyDataSetChanged();
 
             }
 

@@ -51,14 +51,6 @@ import static com.acpay.acapymembers.Background.App.CHANNEL_ID;
 public class BackgroundService extends Service implements LocationListener {
     private FirebaseRemoteConfig mRemoteConfig;
 
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
-    private DatabaseReference mOrdersReference;
-
-    private ChildEventListener mChildEventListener;
-    private ChildEventListener mOrdersEventListener;
-
-
     private boolean getLocationOnOf = false;
     private String locationState = "setLocationOnOff";
 
@@ -101,38 +93,7 @@ public class BackgroundService extends Service implements LocationListener {
         getLocation();
         firebaseRemoteConfig();
         fetchConfig();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
 
-        mOrdersReference = mFirebaseDatabase.getReference().child("orders").child(user.getUid());
-
-
-        mOrdersEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                notifyME("Orders","You Have New Order");
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                notifyME("Orders","Your Order Has Changed");
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        mOrdersReference.addChildEventListener(mOrdersEventListener);
         super.onCreate();
     }
 
@@ -217,7 +178,7 @@ public class BackgroundService extends Service implements LocationListener {
                 .setContentTitle("Acapy Members let this app running in background")
                 .setContentText("")
                 .setContentText(input)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.appbackground)
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);

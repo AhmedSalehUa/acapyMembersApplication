@@ -1,4 +1,4 @@
-package com.acpay.acapymembers;
+package com.acpay.acapymembers.sendNotification;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,11 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.APIService;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Client;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Data;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.MyResponse;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification.Sender;
+import com.acpay.acapymembers.Tokens;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,12 +22,12 @@ public  class SendNotification {
     Tokens tok;
     APIService apiService;
     Context mContext;
-    public SendNotification(Context mContext, String receiver, final String username, final String message) {
+    public SendNotification(Context mContext, String receiver, Data data) {
         this.mContext=mContext;
         apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
-        sendNotifiaction(receiver,username, message);
+        sendNotifiaction(receiver,data);
     }
-    private void sendNotifiaction(String receiver, final String username, final String message) {
+    private void sendNotifiaction(String receiver, final Data data) {
 
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("tokens").child(receiver);
         ChildEventListener mChildEventListener = new ChildEventListener() {
@@ -40,7 +36,7 @@ public  class SendNotification {
                 tok = snapshot.getValue(Tokens.class);
                 if (tok.getToken() != null) {
                     Log.e("b", tok.getToken());
-                    Data data = new Data(username, message);
+
 
                     Sender sender = new Sender(data, tok.getToken());
 

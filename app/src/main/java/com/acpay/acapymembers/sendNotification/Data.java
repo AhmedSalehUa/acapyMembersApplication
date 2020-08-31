@@ -1,16 +1,25 @@
-package com.acpay.acapymembers.bottomNavigationFragement.messages.sendNotification;
+package com.acpay.acapymembers.sendNotification;
 
 public class Data {
     private String user;
-
     private String body;
+    private String method;
 
-    public Data(String user, String body) {
+    public Data(String user, String body,String method) {
         this.user = user;
         this.body = body;
+        this.method = method;
     }
 
     public Data() {
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String methode) {
+        this.method = methode;
     }
 
     public String getUser() {

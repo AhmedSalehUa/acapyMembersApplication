@@ -9,8 +9,8 @@ android {
         applicationId "com.acpay.acapymembers"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 3
-        versionName "3"
+        versionCode 4
+        versionName "4"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -66,6 +66,7 @@ dependencies {
     // ButterKnife view binding
     implementation 'com.jakewharton:butterknife:8.8.1'
 
+    implementation 'com.muddzdev:styleabletoast:2.2.3'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 }
