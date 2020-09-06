@@ -186,24 +186,21 @@
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="50dp">
+                        android:layout_height="wrap_content">
 
                         <TextView
                             android:id="@+id/content_fixType"
                             style="@style/TitleBadgeText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentBottom="true" />
+                            android:layout_toRightOf="@id/content_fixTypeText" />
 
                         <TextView
+                            android:id="@+id/content_fixTypeText"
                             style="@style/TitleBadgeTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_above="@id/content_fixType"
-                            android:layout_alignStart="@id/content_fixType"
-                            android:layout_alignLeft="@id/content_fixType"
+                            android:layout_alignParentLeft="true"
                             android:text="@string/requests_count_badge" />
 
                         <TextView
@@ -211,38 +208,40 @@
                             style="@style/TitleBadgeText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignParentBottom="true" />
+                            android:layout_below="@id/content_fixTypeText"
+                            android:layout_toRightOf="@id/content_dliverCostText" />
 
                         <TextView
+                            android:id="@+id/content_dliverCostText"
                             style="@style/TitleBadgeTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_above="@id/content_dliverCost"
-                            android:layout_alignParentRight="true"
+                            android:layout_below="@id/content_fixTypeText"
+                            android:layout_alignParentLeft="true"
+                            android:layout_marginTop="10dp"
                             android:text="@string/weight_badge" />
 
                         <TextView
                             android:id="@+id/content_matter"
+                            android:layout_marginTop="10dp"
                             style="@style/TitleBadgeText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_centerHorizontal="true" />
+                            android:layout_below="@id/content_dliverCostText"
+                            android:layout_toRightOf="@id/content_matterText" />
 
                         <TextView
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/content_matterText"
                             style="@style/TitleBadgeTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_above="@id/content_matter"
-                            android:layout_alignStart="@id/content_matter"
-                            android:layout_alignLeft="@id/content_matter"
+                            android:layout_below="@id/content_dliverCostText"
+                            android:layout_alignParentLeft="true"
                             android:text="@string/pledge_badge" />
                     </RelativeLayout>
                 </LinearLayout>
 
-                <!-- divider line -->
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
