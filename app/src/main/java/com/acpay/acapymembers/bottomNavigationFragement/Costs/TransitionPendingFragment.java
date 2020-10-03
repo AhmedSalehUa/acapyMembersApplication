@@ -1,13 +1,18 @@
 package com.acpay.acapymembers.bottomNavigationFragement.Costs;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,10 +22,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.acpay.acapymembers.Order.Order;
+import com.acpay.acapymembers.Order.progress.boxes;
 import com.acpay.acapymembers.R;
+import com.acpay.acapymembers.bottomNavigationFragement.Orders.JasonOrderNumsReponser;
+import com.acpay.acapymembers.bottomNavigationFragement.Orders.OrderCostsFragment;
 import com.acpay.acapymembers.sendNotification.Data;
 import com.acpay.acapymembers.sendNotification.SendNotification;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
@@ -66,7 +77,18 @@ public class TransitionPendingFragment extends Fragment {
                     listView.setEmptyView(emptyList);
                     progressBar.setVisibility(View.GONE);
                     emptyList.setText("لايوجد انتقالات");
-
+                    for (int i = 0; i < adapter.getCount(); i++) {
+                        final int po = i;
+                        adapter.getItem(i).setEditeBtn(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                //  Toast.makeText(getContext(),adapter.getItem(po).getOrderNum(),Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getContext(), OrderCostsFragment.class);
+                                intent.putExtra("num", adapter.getItem(po).getOrderNum());
+                                startActivity(intent);
+                            }
+                        });
+                    }
                     Log.e("as", list.toString());
                 } else {
                     handler.postDelayed(this, 100);
@@ -76,6 +98,7 @@ public class TransitionPendingFragment extends Fragment {
 
         };
         handler.post(runnableCode);
+        setHasOptionsMenu(true);
         return rootview;
     }
 
@@ -97,7 +120,7 @@ public class TransitionPendingFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
+        inflater.inflate(R.menu.add_transition, menu);
     }
 
     private List<TransitionsDetails> extractTransitionsfromapi(String userId) {
@@ -133,4 +156,79 @@ public class TransitionPendingFragment extends Fragment {
         return list;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.addNewTrans:
+                Snackbar.make(getView(),"جارى التحميل", BaseTransientBottomBar.LENGTH_SHORT).show();
+                String api = "https://www.app.acapy-trade.com/getOrderNums.php?id=" + FirebaseAuth.getInstance().getCurrentUser().getUid();
+                final JasonOrderNumsReponser update = new JasonOrderNumsReponser();
+                update.setFinish(false);
+                update.execute(api);
+                final Handler handler = new Handler();
+                Runnable runnableCode = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (update.isFinish()) {
+                            String res = update.getUserId();
+                            List<String> list = extractFeuterFromJason(res);
+                            AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
+                            builderSingle.setIcon(R.drawable.ic_add);
+                            builderSingle.setTitle("اختار الاوردر");
+                            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_singlechoice);
+
+                            arrayAdapter.addAll(list);
+
+
+                            builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String strName = arrayAdapter.getItem(which);
+                                    String orderNum = strName.split("-")[0];
+                                    Intent intent = new Intent(getContext(), OrderCostsFragment.class);
+                                    intent.putExtra("num", orderNum);
+                                    startActivity(intent);
+                                }
+                            });
+                            builderSingle.show();
+                        } else {
+                            handler.postDelayed(this, 100);
+                        }
+                    }
+
+
+                };
+                handler.post(runnableCode);
+
+                break;
+        }
+        return true;
+    }
+
+    public static List<String> extractFeuterFromJason(String jason) {
+        final List<String> list = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(jason);
+            JSONArray sa = jsonObject.names();
+            for (int i = 0; i < sa.length(); i++) {
+                JSONObject jsonArrayId = jsonObject.getJSONObject(sa.get(i).toString());
+
+                list.add(jsonArrayId.getString("order_num") + " - "
+                        + jsonArrayId.getString("date") + " - "
+                        + jsonArrayId.getString("place") + " - "
+                        + jsonArrayId.getString("location"));
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

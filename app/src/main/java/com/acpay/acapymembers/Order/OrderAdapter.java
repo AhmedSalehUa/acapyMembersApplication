@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.acpay.acapymembers.R;
-import com.acpay.acapymembers.floadingCell.FoldingCell;
 
 import java.util.HashSet;
 import java.util.List;

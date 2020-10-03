@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_margin="10dp"
+    android:layoutDirection="rtl"
+    android:baselineAligned="false"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="155dp"
+        android:layout_height="match_parent"
         android:layout_weight="3"
         android:background="@color/bgTitleLeft"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingTop="20dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="20dp">
+        android:paddingRight="10dp">
+
 
         <TextView
             android:id="@+id/title_orderNum"
@@ -30,9 +31,8 @@
             android:id="@+id/title_time_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/title_orderNum"
+            android:layout_marginTop="10dp"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
@@ -40,17 +40,24 @@
             android:id="@+id/title_date_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/title_time_label"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
+            android:layout_below="@id/title_time_label"
+            android:layout_marginTop="10dp"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/title_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title_date_label"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@color/bgTitleRight"
         android:paddingStart="15dp"
@@ -108,57 +115,71 @@
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/title_fixType"
-            style="@style/TitleBadgeText"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/fix"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true" />
+            android:layout_below="@id/title_place"
+            android:orientation="horizontal">
 
-        <TextView
-            style="@style/TitleBadgeTitle"
-            android:layout_width="wrap_content"
+            <TextView
+                style="@style/TitleBadgeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="@string/requests_count_badge" />
+
+            <TextView
+                android:id="@+id/title_fixType"
+                style="@style/TitleBadgeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/matter"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/title_fixType"
-            android:layout_alignStart="@id/title_fixType"
-            android:layout_alignLeft="@id/title_fixType"
-            android:text="@string/requests_count_badge" />
+            android:layout_below="@id/fix"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/title_dliverCost"
-            style="@style/TitleBadgeText"
-            android:layout_width="wrap_content"
+            <TextView
+                style="@style/TitleBadgeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pledge_badge" />
+
+            <TextView
+                android:id="@+id/title_matter"
+                style="@style/TitleBadgeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/amm"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true" />
+            android:layout_below="@id/matter"
+            android:orientation="horizontal">
 
-        <TextView
-            style="@style/TitleBadgeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/title_dliverCost"
-            android:layout_alignParentRight="true"
-            android:text="@string/weight_badge" />
+            <TextView
+                style="@style/TitleBadgeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/weight_badge" />
 
-        <TextView
-            android:id="@+id/title_matter"
-            style="@style/TitleBadgeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
-
-        <TextView
-            style="@style/TitleBadgeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/title_matter"
-            android:layout_alignStart="@id/title_matter"
-            android:layout_alignLeft="@id/title_matter"
-            android:text="@string/pledge_badge" />
-
+            <TextView
+                android:id="@+id/title_dliverCost"
+                style="@style/TitleBadgeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp" />
+        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

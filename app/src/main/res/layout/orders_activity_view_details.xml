@@ -191,6 +191,7 @@
                         <TextView
                             android:id="@+id/content_fixType"
                             style="@style/TitleBadgeText"
+                            android:textColor="@android:color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_toRightOf="@id/content_fixTypeText" />
@@ -206,9 +207,10 @@
                         <TextView
                             android:id="@+id/content_dliverCost"
                             style="@style/TitleBadgeText"
+                            android:textColor="@android:color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/content_fixTypeText"
+                            android:layout_below="@id/content_fixType"
                             android:layout_toRightOf="@id/content_dliverCostText" />
 
                         <TextView
@@ -216,7 +218,7 @@
                             style="@style/TitleBadgeTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/content_fixTypeText"
+                            android:layout_below="@id/content_fixType"
                             android:layout_alignParentLeft="true"
                             android:layout_marginTop="10dp"
                             android:text="@string/weight_badge" />
@@ -225,9 +227,10 @@
                             android:id="@+id/content_matter"
                             android:layout_marginTop="10dp"
                             style="@style/TitleBadgeText"
+                            android:textColor="@android:color/black"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/content_dliverCostText"
+                            android:layout_below="@id/content_dliverCost"
                             android:layout_toRightOf="@id/content_matterText" />
 
                         <TextView
@@ -236,7 +239,7 @@
                             style="@style/TitleBadgeTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/content_dliverCostText"
+                            android:layout_below="@id/content_dliverCost"
                             android:layout_alignParentLeft="true"
                             android:text="@string/pledge_badge" />
                     </RelativeLayout>

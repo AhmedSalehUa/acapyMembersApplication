@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,7 +56,7 @@ public class OrderCostsFragment extends AppCompatActivity {
         costsList = (ListView) findViewById(R.id.costList);
 
         String costsapi = "https://www.app.acapy-trade.com/getexpendeCost.php?order=" + orderNum;
-        final JasonReponser costsJason = new JasonReponser();
+        final JasonCostsReponser costsJason = new JasonCostsReponser();
         costsJason.setFinish(false);
         costsJason.execute(costsapi);
         final Handler costshandler = new Handler();
@@ -64,6 +65,7 @@ public class OrderCostsFragment extends AppCompatActivity {
             public void run() {
                 if (costsJason.isFinish()) {
                     costsJasonResponse = costsJason.getUserId();
+                    Log.e("a",costsJasonResponse);
                     costsAdapter = new costsAdapter(OrderCostsFragment.this, fetchCostsJason(costsJasonResponse));
                     costsList.setAdapter(costsAdapter);
                 } else {

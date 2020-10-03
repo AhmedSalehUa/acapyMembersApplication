@@ -12,6 +12,7 @@ public class TransitionsDetails {
     private String Place;
     private String location;
     private List<Transitions> list;
+    private View.OnClickListener editeBtn;
 
 
     public TransitionsDetails(String orderNum, String date, String time, String place, String location, List<Transitions> list) {
@@ -71,4 +72,11 @@ public class TransitionsDetails {
         this.location = location;
     }
 
+    public View.OnClickListener getEditeBtn() {
+        return editeBtn;
+    }
+
+    public void setEditeBtn(View.OnClickListener editeBtn) {
+        this.editeBtn = editeBtn;
+    }
 }

@@ -34,7 +34,12 @@ public class boxesAdapter extends ArrayAdapter<boxes> {
         note.setText(items.getNotes());
 
         CheckBox co=(CheckBox)convertView.findViewById(R.id.chechbox_box);
-        co.setChecked(Boolean.parseBoolean(items.getValue()));
+        if (items.getValue().equals("ok")){
+            co.setChecked(false);
+        }else {
+            co.setChecked(true);
+        }
+
 
         if (items.getCheckListener() == null ){
 

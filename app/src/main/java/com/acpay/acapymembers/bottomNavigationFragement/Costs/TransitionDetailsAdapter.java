@@ -20,7 +20,7 @@ import java.util.List;
 public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
     private HashSet<Integer> unfoldedIndexes = new HashSet<>();
 
-    private View.OnClickListener defaultpayBtnClickListener;
+    private View.OnClickListener defaultediteBtnClickListener;
     private View.OnClickListener defaultunPayBtnClickListener;
     private View.OnClickListener defaultRequestBtnClickListener;
     String target;
@@ -49,6 +49,7 @@ public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
             viewHolder.Contenettime = cell.findViewById(R.id.tarnsition_content_time);
 
             viewHolder.detailsList = cell.findViewById(R.id.tarnsition_content_list);
+            viewHolder.edite=cell.findViewById(R.id.tarnsition_content_edite);
 
             cell.setTag(viewHolder);
         } else {
@@ -85,7 +86,13 @@ public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
         ViewGroup.LayoutParams params = viewHolder.detailsList.getLayoutParams();
         params.height = totalHeight + (viewHolder.detailsList.getDividerHeight() * (myListAdapter.getCount() - 1));
         viewHolder.detailsList.setLayoutParams(params);
+        if (item.getEditeBtn() != null){
+            viewHolder.edite.setOnClickListener(item.getEditeBtn());
 
+        }else {
+            viewHolder.edite.setOnClickListener(defaultediteBtnClickListener);
+
+        }
 
 
         return cell;
@@ -106,6 +113,6 @@ public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
         TextView ContenetorderNum;
         TextView Contenettime;
         ListView detailsList;
-
+        TextView edite;
     }
 }
