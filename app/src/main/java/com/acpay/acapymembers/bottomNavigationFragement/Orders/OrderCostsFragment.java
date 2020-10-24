@@ -131,6 +131,7 @@ public class OrderCostsFragment extends AppCompatActivity {
                     costs so = list.get(x);
                     api += "&amount[]=" + so.getAmount() + "&details[]=" + so.getDetails() + "&date[]=" + so.getDate();
                 }
+                Log.e("add api",api) ;
                 final JasonReponser updateProgress = new JasonReponser();
                 updateProgress.setFinish(false);
                 updateProgress.execute(api);

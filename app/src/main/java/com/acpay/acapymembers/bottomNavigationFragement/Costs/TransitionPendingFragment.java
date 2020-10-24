@@ -71,7 +71,9 @@ public class TransitionPendingFragment extends Fragment {
             @Override
             public void run() {
                 if (update.isFinish()) {
-                    List<TransitionsDetails> list = extractTransitionsfromapi(update.getUserId());
+                    String apiResponsed = update.getUserId();
+                    Log.e("apiResponsed",apiResponsed);
+                    List<TransitionsDetails> list = extractTransitionsfromapi(apiResponsed);
                     adapter = new TransitionDetailsAdapter(getContext(), list, "details");
                     listView.setAdapter(adapter);
                     listView.setEmptyView(emptyList);
