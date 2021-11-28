@@ -1,40 +1,28 @@
 package com.acpay.acapymembers;
 
-import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
+import android.text.InputType;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,6 +34,7 @@ public class LoginPage extends AppCompatActivity {
     public static final int RC_SIGN_IN = 1;
     String token;
     Tokens tokens;
+    String name = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,19 +62,67 @@ public class LoginPage extends AppCompatActivity {
                             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                                 final FirebaseUser user = firebaseAuth.getCurrentUser();
                                 if (user != null) {
+                                    if (user.getDisplayName().isEmpty()) {
 
-                                    mDatabaseReference = mFirebaseDatabase.getReference().child("users").child(user.getDisplayName());
-                                    mDatabaseReference.removeValue();
-                                    User Fireuser = new User(user.getDisplayName(), user.getUid(), "offline");
-                                    mDatabaseReference.push().setValue(Fireuser);
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginPage.this);
+                                        builder.setTitle("Title");
+                                        final EditText input = new EditText(LoginPage.this);
+                                        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                        builder.setView(input);
+                                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                name = input.getText().toString();
+                                                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                        .setDisplayName(name).build();
 
-                                    DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("tokens").child(user.getDisplayName());
-                                    mDatabaseReference.removeValue();
-                                    mDatabaseReference.push().setValue(tokens);
+                                                user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            mDatabaseReference = mFirebaseDatabase.getReference().child("users").child(user.getDisplayName());
+                                                            mDatabaseReference.removeValue();
+                                                            User Fireuser = new User(user.getDisplayName(), user.getUid(), "offline");
+                                                            mDatabaseReference.push().setValue(Fireuser);
 
-                                    Intent intent = new Intent(LoginPage.this, MainActivity.class);
+                                                            DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("tokens").child(user.getDisplayName());
+                                                            mDatabaseReference.removeValue();
+                                                            mDatabaseReference.push().setValue(tokens);
 
-                                    startActivity(intent);
+                                                            Intent intent = new Intent(LoginPage.this, MainActivity.class);
+
+                                                            startActivity(intent);
+
+                                                        }
+                                                    }
+                                                });
+                                                ;
+                                            }
+                                        });
+                                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.cancel();
+                                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                                intent.addCategory(Intent.CATEGORY_HOME);
+                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                startActivity(intent);
+                                            }
+                                        });
+
+                                        builder.show();
+                                    } else {
+                                        Log.e("user.getDisplayName()",user.getUid());
+                                        mDatabaseReference = mFirebaseDatabase.getReference().child("users").child(user.getDisplayName());
+                                        mDatabaseReference.removeValue();
+                                        User Fireuser = new User(user.getDisplayName(), user.getUid(), "offline");
+                                        mDatabaseReference.push().setValue(Fireuser);
+                                        DatabaseReference mDatabaseReference = mFirebaseDatabase.getReference().child("tokens").child(user.getDisplayName());
+                                        mDatabaseReference.removeValue();
+                                        mDatabaseReference.push().setValue(tokens);
+                                        Intent intent = new Intent(LoginPage.this, MainActivity.class);
+                                        startActivity(intent);
+                                    }
                                 } else {
                                     List<AuthUI.IdpConfig> providers = Arrays.asList(
                                             new AuthUI.IdpConfig.EmailBuilder().build(),

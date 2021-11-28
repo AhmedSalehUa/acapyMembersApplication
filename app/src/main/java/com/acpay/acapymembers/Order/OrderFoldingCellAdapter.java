@@ -1,7 +1,8 @@
 package com.acpay.acapymembers.Order;
 
+import static com.acpay.acapymembers.MainActivity.getAPIHEADER;
+
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,12 @@ import com.acpay.acapymembers.Order.progress.boxesAdapter;
 import com.acpay.acapymembers.R;
 import com.acpay.acapymembers.sendNotification.Data;
 import com.acpay.acapymembers.sendNotification.SendNotification;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.ramotion.foldingcell.FoldingCell;
 
@@ -93,7 +100,6 @@ public class OrderFoldingCellAdapter extends ArrayAdapter<Order> {
 
             viewHolder.addNote = rootview.findViewById(R.id.content_note_btn);
             viewHolder.Done = rootview.findViewById(R.id.content_done_btn);
-            viewHolder.Transitions = rootview.findViewById(R.id.content_cost_btn);
             viewHolder.SaveProgress = rootview.findViewById(R.id.content_save_progress);
             viewHolder.Pending = rootview.findViewById(R.id.content_pending_btn);
 
@@ -159,6 +165,7 @@ public class OrderFoldingCellAdapter extends ArrayAdapter<Order> {
                     }
                 });
             }
+            setListViewHeightBasedOnChildren(viewHolder.progressList);
         } else {
             viewHolder.listProg.setVisibility(View.GONE);
             viewHolder.emptyList.setText("لا يوجد خطوات");
@@ -167,8 +174,7 @@ public class OrderFoldingCellAdapter extends ArrayAdapter<Order> {
 
         viewHolder.addNote.setVisibility(item.getAddNotes());
         viewHolder.Done.setVisibility(item.getDoneBtn());
-        viewHolder.Transitions.setVisibility(item.getTransitionBtn());
-        viewHolder.SaveProgress.setVisibility(item.getSaveProgressBtn());
+          viewHolder.SaveProgress.setVisibility(item.getSaveProgressBtn());
         viewHolder.Pending.setVisibility(item.getPendingBtn());
 
         if (item.getAddNotes() != -1) {
@@ -177,11 +183,7 @@ public class OrderFoldingCellAdapter extends ArrayAdapter<Order> {
             viewHolder.addNote.setVisibility(addNotes);
         }
 
-        if (item.getTransitionBtn() != -1) {
-            viewHolder.Transitions.setVisibility(item.getTransitionBtn());
-        } else {
-            viewHolder.Transitions.setVisibility(TransitionsBtn);
-        }
+
 
         if (item.getDoneBtn() != -1) {
             viewHolder.Done.setVisibility(item.getDoneBtn());
@@ -207,12 +209,6 @@ public class OrderFoldingCellAdapter extends ArrayAdapter<Order> {
             viewHolder.addNote.setOnClickListener(defaultaddNotesBtnClickListener);
         }
 
-        if (item.getTransitionsBtnClickListener() != null) {
-            viewHolder.Transitions.setOnClickListener(item.getTransitionsBtnClickListener());
-        } else {
-            viewHolder.Transitions.setOnClickListener(defaultTransitionsBtnClickListener);
-        }
-
         if (item.getDoneBtnClickListener() != null) {
             viewHolder.Done.setOnClickListener(item.getDoneBtnClickListener());
         } else {
@@ -228,35 +224,33 @@ public class OrderFoldingCellAdapter extends ArrayAdapter<Order> {
 
                     Log.e("tabbed", "ok");
                     if (list.size() > 0) {
-                        String api = "https://www.app.acapy-trade.com/updatenotesprog.php?order=" + item.getOrderNum();
+                        String api = getAPIHEADER(getContext())+"/updatenotesprog.php?order=" + item.getOrderNum();
                         for (int x = 0; x < list.size(); x++) {
                             boxes so = list.get(x);
                             api += "&progress[]=" + so.getName() + "&note[]=" + so.getNotes();
                         }
                         Log.w("api", api);
-                        final saveProgressReponser updateProgress = new saveProgressReponser();
-                        updateProgress.setFinish(false);
-                        updateProgress.execute(api);
-                        final Handler handlerProg = new Handler();
-                        Runnable runnableCodeProg = new Runnable() {
-                            @Override
-                            public void run() {
-                                if (updateProgress.isFinish()) {
-                                    String res = updateProgress.getUserId();
-                                    if (!res.equals("0")) {
+                        RequestQueue queue = Volley.newRequestQueue(getContext());
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
                                         Toast.makeText(getContext(), "Saved", Toast.LENGTH_LONG).show();
                                         Data data = new Data(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), "تم تحديث الخطوات", "ordernotes");
                                         SendNotification send1 = new SendNotification(getContext(), manager1, data);
                                         SendNotification send2 = new SendNotification(getContext(), manager2, data);
-                                    } else {
-                                        Toast.makeText(getContext(), "not saved", Toast.LENGTH_LONG).show();
                                     }
-                                } else {
-                                    handlerProg.postDelayed(this, 100);
-                                }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                                Log.e("onResponse", error.toString());
                             }
-                        };
-                        handlerProg.post(runnableCodeProg);
+                        });
+                        stringRequest.setShouldCache(false);
+                        queue.add(stringRequest);
+
                     }
                 }
             });
@@ -275,7 +269,52 @@ public class OrderFoldingCellAdapter extends ArrayAdapter<Order> {
 
         return rootview;
     }
+    public void setListViewHeightBasedOnChildren(ListView listView) {
+        int numberOfItems = adapter.getCount();
 
+        // Get total height of all items.
+        int totalItemsHeight = 0;
+        for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
+            View item = adapter.getView(itemPos, null, listView);
+            float px = 500 * (listView.getResources().getDisplayMetrics().density);
+            item.measure(View.MeasureSpec.makeMeasureSpec((int) px, View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            totalItemsHeight += item.getMeasuredHeight();
+        }
+
+        // Get total height of all item dividers.
+        int totalDividersHeight = listView.getDividerHeight() *
+                (numberOfItems - 1);
+        // Get padding
+        int totalPadding = listView.getPaddingTop() + listView.getPaddingBottom();
+
+        // Set list height.
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = numberOfItems * 200;
+        Log.e("params.height", String.valueOf(params.height));
+        Log.e("listView.height", String.valueOf(listView.getLayoutParams().height));
+        listView.setLayoutParams(params);
+        listView.requestLayout();Log.e("listView.requestLayout", String.valueOf(listView.getLayoutParams().height));
+        //setDynamicHeight(listView);
+
+//        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(),
+//                View.MeasureSpec.UNSPECIFIED);
+//        int totalHeight = 0;
+//        View view = null;
+//        for (int i = 0; i < adapter.getCount(); i++) {
+//            view = adapter.getView(i, view, listView);
+//            if (i == 0)
+//                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth,
+//                        ViewGroup.LayoutParams.WRAP_CONTENT));
+//
+//            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+//            totalHeight += view.getMeasuredHeight();
+//        }
+//        ViewGroup.LayoutParams params = listView.getLayoutParams();
+//        params.height = totalHeight
+//                + (listView.getDividerHeight() * (adapter.getCount() - 1));
+//        listView.setLayoutParams(params);
+//        listView.requestLayout();
+    }
     public void registerToggle(int position) {
         if (unfoldedIndexes.contains(position))
             registerFold(position);
@@ -323,8 +362,7 @@ public class OrderFoldingCellAdapter extends ArrayAdapter<Order> {
         ProgressBar listProg;
 
         TextView addNote;
-        TextView Transitions;
-        TextView Done;
+         TextView Done;
         TextView SaveProgress;
         TextView Pending;
 

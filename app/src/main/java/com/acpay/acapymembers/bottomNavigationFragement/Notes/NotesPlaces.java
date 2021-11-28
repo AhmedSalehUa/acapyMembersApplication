@@ -1,9 +1,5 @@
 package com.acpay.acapymembers.bottomNavigationFragement.Notes;
 
-import com.acpay.acapymembers.R;
-
-import java.util.List;
-
 public class NotesPlaces {
     private String placeId;
     private String palaceName;

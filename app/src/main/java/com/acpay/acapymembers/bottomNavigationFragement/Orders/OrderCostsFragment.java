@@ -1,9 +1,10 @@
 package com.acpay.acapymembers.bottomNavigationFragement.Orders;
 
+import static com.acpay.acapymembers.MainActivity.getAPIHEADER;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,20 +18,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.acpay.acapymembers.JasonReponser;
-import com.acpay.acapymembers.R;
 import com.acpay.acapymembers.Order.progress.costs;
 import com.acpay.acapymembers.Order.progress.costsAdapter;
+import com.acpay.acapymembers.R;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class OrderCostsFragment extends AppCompatActivity {
 
@@ -39,6 +43,10 @@ public class OrderCostsFragment extends AppCompatActivity {
     ListView costsList;
 
     String orderNum;
+
+    String DailyCostDate;
+
+    String Api;
 
     String costsJasonResponse;
 
@@ -52,44 +60,75 @@ public class OrderCostsFragment extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.orders_activity_list_item_cost);
-        orderNum = getIntent().getStringExtra("num");
         costsList = (ListView) findViewById(R.id.costList);
-
-        String costsapi = "https://www.app.acapy-trade.com/getexpendeCost.php?order=" + orderNum;
-        final JasonCostsReponser costsJason = new JasonCostsReponser();
-        costsJason.setFinish(false);
-        costsJason.execute(costsapi);
-        final Handler costshandler = new Handler();
-        Runnable costsrunnableCode = new Runnable() {
-            @Override
-            public void run() {
-                if (costsJason.isFinish()) {
-                    costsJasonResponse = costsJason.getUserId();
-                    Log.e("a",costsJasonResponse);
-                    costsAdapter = new costsAdapter(OrderCostsFragment.this, fetchCostsJason(costsJasonResponse));
-                    costsList.setAdapter(costsAdapter);
-                } else {
-                    costshandler.postDelayed(this, 100);
+        orderNum = getIntent().getStringExtra("num");
+        Log.e("num", orderNum);
+        if (orderNum.equals("daily")) {
+            getSupportActionBar().setTitle("مصاريف يومية");
+            TextView header =(TextView)findViewById(R.id.costsListText);
+            header.setText("مصاريف يومية");
+            costsAdapter = new costsAdapter(OrderCostsFragment.this, new ArrayList<costs>());
+            costsList.setAdapter(costsAdapter);
+            costsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    selectedItem = i;
+                    costs item = costsAdapter.getItem(i);
+                    TextView text = (TextView) findViewById(R.id.cost_amount_add);
+                    TextView note = (TextView) findViewById(R.id.cost_details_add);
+                    TextView co = (TextView) findViewById(R.id.cost_date_add);
+                    text.setText(item.getAmount());
+                    note.setText(item.getDetails());
+                    co.setText(item.getDate());
                 }
-            }
-        };
-        costshandler.post(costsrunnableCode);
+            });
+            TextView co = (TextView) findViewById(R.id.cost_date_add);
+            DailyCostDate = getIntent().getStringExtra("date");
+            co.setText(DailyCostDate);
+        } else {
+            getSupportActionBar().setTitle("انتقالات");
+            TextView header =(TextView)findViewById(R.id.costsListText);
+            header.setText("انتقالات");
+            String costsapi =  getAPIHEADER(OrderCostsFragment.this)+"/getexpendeCost.php?order=" + orderNum;
+            RequestQueue queue = Volley.newRequestQueue(OrderCostsFragment.this);
 
-        costsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                selectedItem = i;
-                costs item = costsAdapter.getItem(i);
-                TextView text = (TextView) findViewById(R.id.cost_amount_add);
-                TextView note = (TextView) findViewById(R.id.cost_details_add);
-                TextView co = (TextView) findViewById(R.id.cost_date_add);
-                text.setText(item.getAmount());
-                note.setText(item.getDetails());
-                co.setText(item.getDate());
-            }
-        });
-        TextView co = (TextView) findViewById(R.id.cost_date_add);
-        co.setText(new SimpleDateFormat("yyyy-MM-dd",Locale.ENGLISH).format(new Date()));
+            Log.e("ApiUrl", costsapi);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, costsapi,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            costsAdapter = new costsAdapter(OrderCostsFragment.this, fetchCostsJason(response));
+                            costsList.setAdapter(costsAdapter);
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    Log.e("onResponse", error.toString());
+                }
+            });
+            stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+            stringRequest.setShouldRetryServerErrors(true);
+            queue.add(stringRequest);
+            costsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    selectedItem = i;
+                    costs item = costsAdapter.getItem(i);
+                    TextView text = (TextView) findViewById(R.id.cost_amount_add);
+                    TextView note = (TextView) findViewById(R.id.cost_details_add);
+                    TextView co = (TextView) findViewById(R.id.cost_date_add);
+                    text.setText(item.getAmount());
+                    note.setText(item.getDetails());
+                    co.setText(item.getDate());
+                }
+            });
+            TextView co = (TextView) findViewById(R.id.cost_date_add);
+            DailyCostDate = getIntent().getStringExtra("date");
+            co.setText(DailyCostDate);
+        }
+
+
     }
 
     private List<costs> fetchCostsJason(String costsJasonResponse) {
@@ -117,42 +156,47 @@ public class OrderCostsFragment extends AppCompatActivity {
         return true;
     }
 
+    String api = "";
+    ArrayList<costs> list = new ArrayList<>();
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                ArrayList<costs> list = new ArrayList<>();
+
                 for (int i = 0; i < costsAdapter.getCount(); i++) {
                     costs val = costsAdapter.getItem(i);
                     list.add(val);
                 }
-                String api = "https://www.app.acapy-trade.com/setexpendeCost.php?order=" + orderNum;
-                for (int x = 0; x < list.size(); x++) {
-                    costs so = list.get(x);
-                    api += "&amount[]=" + so.getAmount() + "&details[]=" + so.getDetails() + "&date[]=" + so.getDate();
-                }
-                Log.e("add api",api) ;
-                final JasonReponser updateProgress = new JasonReponser();
-                updateProgress.setFinish(false);
-                updateProgress.execute(api);
-                final Handler handlerProg = new Handler();
-                Runnable runnableCodeProg = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (updateProgress.isFinish()) {
-                            String res = updateProgress.getUserId();
-                            if (!res.equals("0")) {
-                                Toast.makeText(OrderCostsFragment.this, "Saved", Toast.LENGTH_LONG).show();
-                                onBackPressed();
-                            } else {
-                                Toast.makeText(OrderCostsFragment.this, "not saved", Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            handlerProg.postDelayed(this, 100);
+
+                if (orderNum.equals("daily")) {
+                    setUpApi();
+                    RequestQueue queue = Volley.newRequestQueue(OrderCostsFragment.this);
+                    StringRequest stringRequest = new StringRequest(Request.Method.GET, Api,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+
+                                    api =  getAPIHEADER(OrderCostsFragment.this)+"/setexpendeCost.php?order=" + response;
+                                    Log.e("api",api); completeAdding();
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                            Log.e("onResponse", error.toString());
                         }
-                    }
-                };
-                handlerProg.post(runnableCodeProg);
+                    });
+                    stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+                    stringRequest.setShouldRetryServerErrors(true);
+                    queue.add(stringRequest);
+                    Log.e("api",Api);
+
+                } else {
+                    api =  getAPIHEADER(OrderCostsFragment.this)+"/setexpendeCost.php?order=" + orderNum;
+                    completeAdding();
+                }
+
                 return true;
             case R.id.action_add:
 
@@ -179,9 +223,8 @@ public class OrderCostsFragment extends AppCompatActivity {
                     costsAdapter.add(new costs(text.getText().toString(), note.getText().toString(), co.getText().toString()));
                     text.setText("");
                     note.setText("");
-                    co.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(new Date()));
+                    co.setText(DailyCostDate);
                 }
-                // Utility.setDynamicHeight(costsList);
                 return true;
             case R.id.action_delete:
                 if (selectedItem == -1) {
@@ -192,6 +235,43 @@ public class OrderCostsFragment extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void completeAdding() {
+
+        for (int x = 0; x < list.size(); x++) {
+            costs so = list.get(x);
+            api += "&amount[]=" + so.getAmount() + "&details[]=" + so.getDetails() + "&date[]=" + so.getDate();
+        }
+        Log.e("add api", api);
+        RequestQueue queue = Volley.newRequestQueue(OrderCostsFragment.this);
+
+        Log.e("ApiUrl", api);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(OrderCostsFragment.this, "Saved", Toast.LENGTH_LONG).show();
+                        onBackPressed();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("onResponse", error.toString());
+            }
+        });
+        stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldRetryServerErrors(true);
+        queue.add(stringRequest);
+
+    }
+
+    private void setUpApi() {
+        Api = getAPIHEADER(OrderCostsFragment.this)+"/addOrdersFake.php?"
+                + "&date=" + DailyCostDate
+                + "&username[]=" + FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
+                + "&uid[]=" + FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 }
 

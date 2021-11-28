@@ -1,11 +1,11 @@
 package com.acpay.acapymembers.bottomNavigationFragement.Notes;
 
-import android.annotation.SuppressLint;
+
+import static com.acpay.acapymembers.MainActivity.getAPIHEADER;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.acpay.acapymembers.R;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.muddzdev.styleabletoast.StyleableToast;
 
 import org.json.JSONArray;
@@ -25,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -60,30 +65,32 @@ public class AddDevice extends AppCompatActivity {
         olacename = (TextView) findViewById(R.id.olacename);
         bt = (Button) findViewById(R.id.bt);
         bt.setEnabled(false);
-        String api = "https://www.app.acapy-trade.com/getNotes.php";
-        final NotesResponser update = new NotesResponser();
-        update.setFinish(false);
-        update.execute(api);
-        final Handler handler = new Handler();
-        Runnable runnableCode = new Runnable() {
-            @SuppressLint("NewApi")
-            @Override
-            public void run() {
-                if (update.isFinish()) {
-                    TokenList = update.getUserId();
-                    noteslist = extractFeuterFromJason(TokenList);
-                    Log.e("as", String.valueOf(noteslist.size()));
-                    for (int i = 0; i < noteslist.size(); i++) {
-                        usersList.add(noteslist.get(i).getPalaceName());
-                    }
-                    bt.setEnabled(true);
-                } else {
-                    handler.postDelayed(this, 100);
-                }
+        String api =  getAPIHEADER(AddDevice.this)+"/getNotes.php";
+        RequestQueue queue = Volley.newRequestQueue(AddDevice.this);
 
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        noteslist = extractFeuterFromJason(response);
+
+                        for (int i = 0; i < noteslist.size(); i++) {
+                            usersList.add(noteslist.get(i).getPalaceName());
+                        }
+                        bt.setEnabled(true);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("onResponse", error.toString());
             }
-        };
-        handler.post(runnableCode);
+        });
+        stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldRetryServerErrors(true);
+        queue.add(stringRequest);
+
     }
 
     @Override
@@ -91,8 +98,6 @@ public class AddDevice extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_editor, menu);
         return true;
     }
-
-    AddResponser update;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -114,28 +119,31 @@ public class AddDevice extends AppCompatActivity {
                                 .iconStart(R.drawable.falied)
                                 .show();
                     } else {
-                        update = new AddResponser();
-                        update.setFinish(false);
-                        update.execute(getApi());
-                        final Handler handler = new Handler();
-                        Runnable runnableCode = new Runnable() {
-                            @Override
-                            public void run() {
-                                if (update.isFinish()) {
-                                    String res = update.getUserId();
-                                    if (!res.equals("0")) {
-                                        new StyleableToast.Builder(AddDevice.this).text("Saved").iconStart(R.drawable.ic_save).backgroundColor(getResources().getColor(android.R.color.holo_green_light)).show();
-                                        onBackPressed();
-                                    } else {
-                                        new StyleableToast.Builder(AddDevice.this).text("Not Saved!").iconStart(R.drawable.falied).backgroundColor(getResources().getColor(android.R.color.holo_red_dark)).show();
-                                        onBackPressed();
+                        RequestQueue queue = Volley.newRequestQueue(AddDevice.this);
+
+                        StringRequest stringRequest = new StringRequest(Request.Method.GET, getApi(),
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        if (!response.equals("0")) {
+                                            new StyleableToast.Builder(AddDevice.this).text("Saved").iconStart(R.drawable.ic_save).backgroundColor(getResources().getColor(android.R.color.holo_green_light)).show();
+                                            onBackPressed();
+                                        } else {
+                                            new StyleableToast.Builder(AddDevice.this).text("Not Saved!").iconStart(R.drawable.falied).backgroundColor(getResources().getColor(android.R.color.holo_red_dark)).show();
+                                            onBackPressed();
+                                        }
                                     }
-                                } else {
-                                    handler.postDelayed(this, 100);
-                                }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                                Log.e("onResponse", error.toString());
                             }
-                        };
-                        handler.post(runnableCode);
+                        });
+                        stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+                        stringRequest.setShouldRetryServerErrors(true);
+                        queue.add(stringRequest);
+
                     }
                 }
         }
@@ -143,7 +151,7 @@ public class AddDevice extends AppCompatActivity {
     }
 
     private String getApi() {
-        String Api = "https://www.app.acapy-trade.com/addNotesDetails.php?id=" + id
+        String Api =  getAPIHEADER(AddDevice.this)+"/addNotesDetails.php?id=" + id
                 + "&name=" + name.getText().toString() + "&type=" + type.getText().toString()
                 + "&model=" + model.getText().toString() + "&details=" + details.getText().toString()
                 + "&ip=" + ip.getText().toString() + "&username=" + username.getText().toString()

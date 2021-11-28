@@ -1,5 +1,8 @@
 package com.acpay.acapymembers.Background;
 
+import static com.acpay.acapymembers.Background.App.CHANNEL_ID;
+import static com.acpay.acapymembers.MainActivity.getAPIHEADER;
+
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -25,28 +28,29 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
-import com.acpay.acapymembers.JasonReponser;
 import com.acpay.acapymembers.MainActivity;
+import com.acpay.acapymembers.Order.Order;
+import com.acpay.acapymembers.Order.OrderUtilies;
 import com.acpay.acapymembers.R;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import static com.acpay.acapymembers.Background.App.CHANNEL_ID;
 
 public class BackgroundService extends Service implements LocationListener {
     private FirebaseRemoteConfig mRemoteConfig;
@@ -183,7 +187,6 @@ public class BackgroundService extends Service implements LocationListener {
                 .build();
         startForeground(1, notification);
         getLocation();
-
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
@@ -300,6 +303,7 @@ public class BackgroundService extends Service implements LocationListener {
     @Override
     public void onDestroy() {
         getLocation();
+        stopForeground(1);
         super.onDestroy();
     }
 
@@ -314,10 +318,25 @@ public class BackgroundService extends Service implements LocationListener {
     public void onLocationChanged(@NonNull Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        String api = "https://www.app.acapy-trade.com/locationInserter.php?id=" + user.getUid()
+        String api =  getAPIHEADER(BackgroundService.this)+"/locationInserter.php?id=" + user.getUid()
                 + "&latitude=" + latitude + "&longlatitude=" + longitude + "&date=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).format(new Date());
-        final JasonReponser updateProgress = new JasonReponser();
-        updateProgress.setFinish(false);
-        updateProgress.execute(api);
+        RequestQueue queue = Volley.newRequestQueue(BackgroundService.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("onResponse", error.toString());
+            }
+        });
+        stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldRetryServerErrors(true);
+        queue.add(stringRequest);
+
     }
 }

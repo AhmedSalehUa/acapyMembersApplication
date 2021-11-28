@@ -137,4 +137,5 @@
     <string name="choose">choose place</string>
     <string name="nav_transitions_pay">فى انتظار الدفع</string>
     <string name="nav_transitions_paied">تم الدفع</string>
+    <string name="action_add_ip">تعديل السيرفر</string>
 </resources>

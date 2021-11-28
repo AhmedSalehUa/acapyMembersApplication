@@ -1,7 +1,8 @@
 package com.acpay.acapymembers.bottomNavigationFragement.Costs;
 
+import static com.acpay.acapymembers.MainActivity.getAPIHEADER;
+
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,6 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.acpay.acapymembers.R;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -30,8 +37,6 @@ import java.util.List;
 public class TransitionDoneFragment extends Fragment {
     BottomNavigationView bottomNav;
     TransitionDetailsAdapter adapter;
-    TransitionsApiUpdate updatea;
-    TransitionsApiRespoding update;
     ProgressBar progressBar;
     TextView emptyList;
 
@@ -48,31 +53,32 @@ public class TransitionDoneFragment extends Fragment {
         progressBar = rootview.findViewById(R.id.costListProgress);
         emptyList = rootview.findViewById(R.id.costListText);
         emptyList.setText("جارى التحميل");
-        String api = "https://www.app.acapy-trade.com/getTransitions.php?name=" + getName() + "&status=true";
-        update = new TransitionsApiRespoding();
-        update.setFinish(false);
-        update.execute(api);
-        final Handler handler = new Handler();
-        Runnable runnableCode = new Runnable() {
+        String api = getAPIHEADER(getContext())+"/getTransitions.php?name=" + getName() + "&status=true";
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        List<TransitionsDetails> list = extractTransitionsfromapi(response);
+                        adapter = new TransitionDetailsAdapter(getContext(), list, "details");
+                        listView.setAdapter(adapter);
+                        listView.setEmptyView(emptyList);
+                        progressBar.setVisibility(View.GONE);
+                        emptyList.setText("لايوجد انتقالات");
+
+                        Log.e("as", list.toString());
+                    }
+                }, new Response.ErrorListener() {
             @Override
-            public void run() {
-                if (update.isFinish()) {
-                    List<TransitionsDetails> list = extractTransitionsfromapi(update.getUserId());
-                    adapter = new TransitionDetailsAdapter(getContext(), list, "details");
-                    listView.setAdapter(adapter);
-                    listView.setEmptyView(emptyList);
-                    progressBar.setVisibility(View.GONE);
-                    emptyList.setText("لايوجد انتقالات");
+            public void onErrorResponse(VolleyError error) {
 
-                    Log.e("as", list.toString());
-                } else {
-                    handler.postDelayed(this, 100);
-                }
+                Log.e("onResponse", error.toString());
             }
+        });
+        stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldRetryServerErrors(true);
+        queue.add(stringRequest);
 
-
-        };
-        handler.post(runnableCode);
         return rootview;
     }
 

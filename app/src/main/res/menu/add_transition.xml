@@ -4,6 +4,9 @@
     <item
         android:id="@+id/addNewTrans"
         android:icon="@drawable/ic_add"
-        android:title="Add Transition"
-        app:showAsAction="always" />
+        android:title="اضافة انتقالات" />
+    <item
+        android:id="@+id/addNewCost"
+        android:icon="@drawable/ic_add"
+        android:title="اضافة مصاريف" />
 </menu>

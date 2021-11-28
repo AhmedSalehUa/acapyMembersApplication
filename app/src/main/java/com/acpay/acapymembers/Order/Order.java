@@ -1,8 +1,6 @@
 package com.acpay.acapymembers.Order;
 
 import android.view.View;
-import android.widget.ListView;
-
 
 import com.acpay.acapymembers.Order.progress.boxes;
 import com.acpay.acapymembers.Order.progress.boxesAdapter;

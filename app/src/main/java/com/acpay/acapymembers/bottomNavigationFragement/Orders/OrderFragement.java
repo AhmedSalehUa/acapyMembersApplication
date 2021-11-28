@@ -1,14 +1,17 @@
 package com.acpay.acapymembers.bottomNavigationFragement.Orders;
 
+import static com.acpay.acapymembers.MainActivity.getAPIHEADER;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.provider.Settings;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -20,10 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,27 +32,25 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.acpay.acapymembers.Order.OrderDone;
-import com.acpay.acapymembers.Order.OrderFoldingCellAdapter;
-import com.acpay.acapymembers.Order.progress.boxes;
-import com.acpay.acapymembers.Order.progress.boxesAdapter;
-import com.acpay.acapymembers.Order.progress.progressReponser;
-import com.acpay.acapymembers.Order.saveProgressReponser;
-import com.acpay.acapymembers.R;
+import com.acpay.acapymembers.MainActivity;
 import com.acpay.acapymembers.Order.Order;
-import com.acpay.acapymembers.Order.OrderAdapter;
-import com.acpay.acapymembers.Order.OrderLoader;
+import com.acpay.acapymembers.Order.OrderFoldingCellAdapter;
+import com.acpay.acapymembers.Order.OrderUtilies;
+import com.acpay.acapymembers.R;
 import com.acpay.acapymembers.bottomNavigationFragement.Notes.AddDevice;
 import com.acpay.acapymembers.sendNotification.Data;
 import com.acpay.acapymembers.sendNotification.SendNotification;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ramotion.foldingcell.FoldingCell;
@@ -59,7 +58,7 @@ import com.ramotion.foldingcell.FoldingCell;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderFragement extends Fragment implements LoaderCallbacks<List<Order>> {
+public class OrderFragement extends Fragment {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     private String ApiUrl;
@@ -71,14 +70,14 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
     TextView emptyList;
 
     public OrderFragement() {
-        ApiUrl = " https://www.app.acapy-trade.com/orders.php?type=ok" + "&uid=" + user.getUid();
-        Log.w("call order fragment ", ApiUrl);
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.orders_activity, container, false);
+        ApiUrl = getAPIHEADER(getContext()) + "/orders.php?type=ok" + "&uid=" + user.getUid();
         final SwipeRefreshLayout pullToRefresh = rootView.findViewById(R.id.pullToRefresh);
         progressBar = (ProgressBar) rootView.findViewById(R.id.listProgressOrder);
         emptyList = (TextView) rootView.findViewById(R.id.listEmptyOrder);
@@ -95,8 +94,7 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
                 if (isConnected) {
-                    loaderManager = getLoaderManager();
-                    loaderManager.initLoader(ORDER_LOADER_ID, null, OrderFragement.this);
+                    performApiRequest();
                 } else {
                     emptyList.setText("لا يوجد اتصال بالانترنت");
                 }
@@ -133,21 +131,33 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
                 adapter.registerToggle(pos);
             }
         });
-        ConnectivityManager cm =
-                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-        if (isConnected) {
-            loaderManager = getLoaderManager();
-            loaderManager.initLoader(ORDER_LOADER_ID, null, OrderFragement.this);
-        } else {
-            emptyList.setText("لا يوجد اتصال بالانترنت");
-        }
+        performApiRequest();
         setHasOptionsMenu(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("اوردرات");
         return rootView;
+    }
+
+    private void performApiRequest() {
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, getAPIHEADER(getContext()),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.e("onResponse", response);
+                        List<Order> orders = OrderUtilies.extractFeuterFromJason(response);
+                        setupAdpater(orders);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("onResponse", error.toString());
+            }
+        });
+        stringRequest.setShouldCache(false);
+        stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldRetryServerErrors(true);
+        queue.add(stringRequest);
     }
 
     @Override
@@ -163,22 +173,53 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
             case R.id.action_add:
                 startActivity(new Intent(getContext(), AddDevice.class));
                 break;
+
+            case R.id.action_Ip:
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+                alertDialog.setTitle("set Static Ip");
+                LinearLayout container = new LinearLayout(getContext());
+                container.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.setMargins(20, 20, 20, 20);
+                final EditText input = new EditText(getContext());
+                input.setLayoutParams(lp);
+                input.setGravity(Gravity.TOP | Gravity.LEFT);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setLines(1);
+                input.setMaxLines(1);
+                input.setText(getAPIHEADER(getContext()));
+                container.addView(input, lp);
+                alertDialog.setView(container);
+                alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if (input.getText().toString().length() > 1) {
+                            SharedPreferences.Editor sharedPreferences = getContext().getSharedPreferences("MainActivity", 0).edit();
+                            sharedPreferences.putString("api", input.getText().toString());
+                            sharedPreferences.commit();
+                        }
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        Toast.makeText(getContext(), "canceled", Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
+                break;
         }
         return true;
     }
 
     String manager1 = "Samaan";
     String manager2 = "Ireny";
+//
+//    @NonNull
+//    @Override
+//    public Loader<List<Order>> onCreateLoader(int id, @Nullable Bundle args) {
+//
+//        return new OrderLoader(getContext(), ApiUrl);
+//    }
+//
 
-    @NonNull
-    @Override
-    public Loader<List<Order>> onCreateLoader(int id, @Nullable Bundle args) {
-
-        return new OrderLoader(getContext(), ApiUrl);
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<List<Order>> loader, List<Order> data) {
+    private void setupAdpater(List<Order> data) {
         progressBar.setVisibility(View.GONE);
         emptyList.setText("لا يوجد اوردرات");
         adapter.clear();
@@ -209,34 +250,40 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
                     input.setInputType(InputType.TYPE_CLASS_TEXT);
                     input.setLines(1);
                     input.setMaxLines(1);
-                    input.setText(adapter.getItem(postion).getNotes());
+                    input.setText("test");
                     container.addView(input, lp);
-
                     alertDialog.setView(container);
                     alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "updateNotes", input.getText().toString());
-                            final Handler handler = new Handler();
-                            Runnable runnableCode = new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (orderDone.isFinish()) {
-                                        if (orderDone.getResponse().equals("1")) {
-                                            Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT).show();
-                                            Data data = new Data(user.getDisplayName(), "تم اضافة ملاحظة", "ordernotes");
-                                            SendNotification send1 = new SendNotification(getContext(), manager1, data);
-                                            SendNotification send2 = new SendNotification(getContext(), manager2, data);
+                            if (input.getText().toString().length() > 1) {
+                                String api = getAPIHEADER(getContext()) + "/updatenotes.php?order=" + adapter.getItem(postion).getOrderNum() + "&note=" + input.getText().toString();
+                                RequestQueue queue = Volley.newRequestQueue(getContext());
+                                Log.e("NotesBtn", api);
+                                StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                                        new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                Log.e("NotesBtn", response);
+                                                Toast.makeText(getContext(), "done", Toast.LENGTH_SHORT).show();
+                                                Data data = new Data(user.getDisplayName(), user.getDisplayName() + " اضاف ملاحظة على الاوردر : " + input.getText().toString(), "ordernotes");
+                                                SendNotification send1 = new SendNotification(getContext(), manager1, data);
+                                                SendNotification send2 = new SendNotification(getContext(), manager2, data);
+                                                onBackPressed();
+                                                performApiRequest();
+                                            }
+                                        }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
 
-                                            onBackPressed();
-                                        } else {
-                                            Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
-                                        }
-                                    } else {
-                                        handler.postDelayed(this, 100);
                                     }
-                                }
-                            };
-                            handler.post(runnableCode);
+                                });
+                                stringRequest.setShouldCache(false);
+                                stringRequest.setShouldRetryConnectionErrors(true);
+                                stringRequest.setShouldRetryServerErrors(true);
+                                queue.add(stringRequest);
+
+
+                            }
                         }
                     }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
@@ -251,48 +298,85 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), OrderCostsFragment.class);
                     intent.putExtra("num", adapter.getItem(postion).getOrderNum());
+                    intent.putExtra("date", adapter.getItem(postion).getDate());
                     startActivity(intent);
                 }
             });
             adapter.getItem(i).setPendingBtnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setMessage("يرجى اضافة السبب للملاحظات اولا").setTitle("هل تريد تاجيل الاوردر لوجود مشكلة")
-                            .setCancelable(false)
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                                    final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "pending");
-                                    final Handler handler = new Handler();
-                                    Runnable runnableCode = new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (orderDone.isFinish()) {
-                                                if (orderDone.getResponse().equals("1")) {
-                                                    Toast.makeText(getContext(), "Pended", Toast.LENGTH_SHORT).show();
-                                                    Data data = new Data( user.getDisplayName(), "تم تاجيل الاوردر","pended");
-                                                    SendNotification send1 = new SendNotification(getContext(), manager1,data);
-                                                    SendNotification send2 = new SendNotification(getContext(), manager2,data);
+//                    pendingOrder.php?order=" + order.getOrderNum()
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+                    alertDialog.setTitle("اضافة السبب");
+                    LinearLayout container = new LinearLayout(getContext());
+                    container.setOrientation(LinearLayout.VERTICAL);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins(20, 20, 20, 20);
+                    final EditText input = new EditText(getContext());
+                    input.setLayoutParams(lp);
+                    input.setGravity(Gravity.TOP | Gravity.LEFT);
+                    input.setInputType(InputType.TYPE_CLASS_TEXT);
+                    input.setLines(1);
+                    input.setMaxLines(1);
+                    input.setText("test");
+                    container.addView(input, lp);
+                    alertDialog.setView(container);
+                    alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            if (input.getText().toString().length() > 1) {
+                                String api = getAPIHEADER(getContext()) + "/updatenotes.php?order=" + adapter.getItem(postion).getOrderNum() + "&note=" + input.getText().toString();
+                                RequestQueue queue = Volley.newRequestQueue(getContext());
+                                Log.e("NotesBtn", api);
+                                StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                                        new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                String api = getAPIHEADER(getContext()) + "/pendingOrder.php?order=" + adapter.getItem(postion).getOrderNum();
+                                                RequestQueue queue = Volley.newRequestQueue(getContext());
+                                                Log.e("NotesBtn", api);
+                                                StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                                                        new Response.Listener<String>() {
+                                                            @Override
+                                                            public void onResponse(String response) {
+                                                                Log.e("NotesBtn", response);
+                                                                Toast.makeText(getContext(), "done", Toast.LENGTH_SHORT).show();
+                                                                Data data = new Data(user.getDisplayName(), user.getDisplayName() + " اجل الاوردر بسبب : " + input.getText().toString(), "ordernotes");
+                                                                SendNotification send1 = new SendNotification(getContext(), manager1, data);
+                                                                SendNotification send2 = new SendNotification(getContext(), manager2, data);
+                                                                onBackPressed();
+                                                                performApiRequest();
+                                                            }
+                                                        }, new Response.ErrorListener() {
+                                                    @Override
+                                                    public void onErrorResponse(VolleyError error) {
 
-                                                    onBackPressed();
-                                                } else {
-                                                    Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
-                                                }
-                                            } else {
-                                                handler.postDelayed(this, 100);
+                                                    }
+                                                });
+                                                stringRequest.setShouldCache(false);
+                                                stringRequest.setShouldRetryConnectionErrors(true);
+                                                stringRequest.setShouldRetryServerErrors(true);
+                                                queue.add(stringRequest);
                                             }
-                                        }
-                                    };
-                                    handler.post(runnableCode);
-                                }
-                            })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                    final AlertDialog alert = builder.create();
-                    alert.show();
+                                        }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+
+                                    }
+                                });
+                                stringRequest.setShouldCache(false);
+                                stringRequest.setShouldRetryConnectionErrors(true);
+                                stringRequest.setShouldRetryServerErrors(true);
+                                queue.add(stringRequest);
+
+
+                            }
+                        }
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Toast.makeText(getContext(), "canceled", Toast.LENGTH_SHORT).show();
+                        }
+                    }).show();
+
                 }
             });
             adapter.getItem(i).setDoneBtnClickListener(new View.OnClickListener() {
@@ -303,28 +387,32 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
                             .setCancelable(false)
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                                    final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "done");
-                                    final Handler handler = new Handler();
-                                    Runnable runnableCode = new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            if (orderDone.isFinish()) {
-                                                if (orderDone.getResponse().equals("1")) {
-                                                    Toast.makeText(getContext(), "تم الحفظ", Toast.LENGTH_SHORT).show();
-                                                    Data data = new Data( user.getDisplayName(), "انتهى الاوردر","finished");
-                                                    SendNotification send1 = new SendNotification(getContext(), manager1,data);
-                                                    SendNotification send2 = new SendNotification(getContext(), manager2,data);
-
+                                    String api = getAPIHEADER(getContext()) + "/doneOrder.php?order=" + adapter.getItem(postion).getOrderNum();
+                                    RequestQueue queue = Volley.newRequestQueue(getContext());
+                                    Log.e("NotesBtn", api);
+                                    StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                                            new Response.Listener<String>() {
+                                                @Override
+                                                public void onResponse(String response) {
+                                                    Log.e("NotesBtn", response);
+                                                    Toast.makeText(getContext(), "done", Toast.LENGTH_SHORT).show();
+                                                    Data data = new Data(user.getDisplayName(), user.getDisplayName() + " انهى الاوردر بنجاح : ", "ordernotes");
+                                                    SendNotification send1 = new SendNotification(getContext(), manager1, data);
+                                                    SendNotification send2 = new SendNotification(getContext(), manager2, data);
                                                     onBackPressed();
-                                                } else {
-                                                    Toast.makeText(getContext(), "خطا", Toast.LENGTH_SHORT).show();
+                                                    performApiRequest();
                                                 }
-                                            } else {
-                                                handler.postDelayed(this, 100);
-                                            }
+                                            }, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+
                                         }
-                                    };
-                                    handler.post(runnableCode);
+                                    });
+                                    stringRequest.setShouldCache(false);
+                                    stringRequest.setShouldRetryConnectionErrors(true);
+                                    stringRequest.setShouldRetryServerErrors(true);
+                                    queue.add(stringRequest);
+
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -343,10 +431,5 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
     }
 
-    @Override
-    public void onLoaderReset(@NonNull Loader<List<Order>> loader) {
-
-        adapter.clear();
-    }
 
 }

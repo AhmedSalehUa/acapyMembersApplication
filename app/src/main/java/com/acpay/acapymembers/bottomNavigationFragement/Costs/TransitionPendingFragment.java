@@ -1,10 +1,12 @@
 package com.acpay.acapymembers.bottomNavigationFragement.Costs;
 
+import static com.acpay.acapymembers.MainActivity.getAPIHEADER;
+
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,22 +15,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.acpay.acapymembers.Order.Order;
-import com.acpay.acapymembers.Order.progress.boxes;
 import com.acpay.acapymembers.R;
-import com.acpay.acapymembers.bottomNavigationFragement.Orders.JasonOrderNumsReponser;
 import com.acpay.acapymembers.bottomNavigationFragement.Orders.OrderCostsFragment;
-import com.acpay.acapymembers.sendNotification.Data;
-import com.acpay.acapymembers.sendNotification.SendNotification;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -39,13 +42,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class TransitionPendingFragment extends Fragment {
     BottomNavigationView bottomNav;
     TransitionDetailsAdapter adapter;
-    TransitionsApiUpdate updatea;
-    TransitionsApiRespoding update;
     ProgressBar progressBar;
     TextView emptyList;
 
@@ -62,59 +65,62 @@ public class TransitionPendingFragment extends Fragment {
         progressBar = rootview.findViewById(R.id.costListProgress);
         emptyList = rootview.findViewById(R.id.costListText);
         emptyList.setText("جارى التحميل");
-        String api = "https://www.app.acapy-trade.com/getTransitions.php?name=" + getName() + "&status=false";
-        update = new TransitionsApiRespoding();
-        update.setFinish(false);
-        update.execute(api);
-        final Handler handler = new Handler();
-        Runnable runnableCode = new Runnable() {
-            @Override
-            public void run() {
-                if (update.isFinish()) {
-                    String apiResponsed = update.getUserId();
-                    Log.e("apiResponsed",apiResponsed);
-                    List<TransitionsDetails> list = extractTransitionsfromapi(apiResponsed);
-                    adapter = new TransitionDetailsAdapter(getContext(), list, "details");
-                    listView.setAdapter(adapter);
-                    listView.setEmptyView(emptyList);
-                    progressBar.setVisibility(View.GONE);
-                    emptyList.setText("لايوجد انتقالات");
-                    for (int i = 0; i < adapter.getCount(); i++) {
-                        final int po = i;
-                        adapter.getItem(i).setEditeBtn(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                //  Toast.makeText(getContext(),adapter.getItem(po).getOrderNum(),Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getContext(), OrderCostsFragment.class);
-                                intent.putExtra("num", adapter.getItem(po).getOrderNum());
-                                startActivity(intent);
-                            }
-                        });
+        String api = getAPIHEADER(getContext()) + "/getTransitions.php?name=" + getName() + "&status=false";
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        List<TransitionsDetails> list = extractTransitionsfromapi(response);
+                        adapter = new TransitionDetailsAdapter(getContext(), list, "details");
+                        listView.setAdapter(adapter);
+                        listView.setEmptyView(emptyList);
+                        progressBar.setVisibility(View.GONE);
+                        emptyList.setText("لايوجد انتقالات");
+                        for (int i = 0; i < adapter.getCount(); i++) {
+                            final int po = i;
+                            adapter.getItem(i).setEditeBtn(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    //  Toast.makeText(getContext(),adapter.getItem(po).getOrderNum(),Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getContext(), OrderCostsFragment.class);
+                                    intent.putExtra("num", adapter.getItem(po).getOrderNum());
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+                        Log.e("as", list.toString());
                     }
-                    Log.e("as", list.toString());
-                } else {
-                    handler.postDelayed(this, 100);
-                }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("onResponse", error.toString());
             }
+        });
+        stringRequest.setShouldCache(false);
+        stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldRetryServerErrors(true);
+        queue.add(stringRequest);
 
-
-        };
-        handler.post(runnableCode);
         setHasOptionsMenu(true);
         return rootview;
     }
 
     private String getName() {
         String user = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-        switch (user) {
-            case "Ahmed Saleh":
-                return "Ahmed";
-            case "George Elgndy":
-                return "George";
-            case "Mohamed Hammad":
-                return "Mohamed";
-            case "Remon":
-                return "Remon";
+        if (!user.isEmpty()) {
+            switch (user) {
+                case "Ahmed Saleh":
+                    return "Ahmed";
+                case "Barsom":
+                    return "Barsom";
+                case "Mohamed Hammad":
+                    return "Mohamed";
+                case "Remon":
+                    return "Remon";
+            }
+        } else {
+            return FirebaseAuth.getInstance().getCurrentUser().getUid();
         }
         return "";
     }
@@ -162,52 +168,76 @@ public class TransitionPendingFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.addNewTrans:
-                Snackbar.make(getView(),"جارى التحميل", BaseTransientBottomBar.LENGTH_SHORT).show();
-                String api = "https://www.app.acapy-trade.com/getOrderNums.php?id=" + FirebaseAuth.getInstance().getCurrentUser().getUid();
-                final JasonOrderNumsReponser update = new JasonOrderNumsReponser();
-                update.setFinish(false);
-                update.execute(api);
-                final Handler handler = new Handler();
-                Runnable runnableCode = new Runnable() {
+                Snackbar.make(getView(), "جارى التحميل", BaseTransientBottomBar.LENGTH_SHORT).show();
+                String api = getAPIHEADER(getContext()) + "/getOrderNums.php?id=" + FirebaseAuth.getInstance().getCurrentUser().getUid();
+                RequestQueue queue = Volley.newRequestQueue(getContext());
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                List<String> list = extractFeuterFromJason(response);
+                                List<String> lastFive = list.subList(list.size() - 5, list.size());
+                                Collections.reverse(lastFive);
+                                AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
+                                builderSingle.setIcon(R.drawable.ic_add);
+                                builderSingle.setTitle("اختار الاوردر");
+                                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_singlechoice);
+
+                                arrayAdapter.addAll(lastFive);
+
+                                builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String strName = arrayAdapter.getItem(which);
+                                        String dateOfOrder = strName.split("-")[1] + "-" + strName.split("-")[2] + "-" + strName.split("-")[3];
+                                        String orderNum = strName.split("-")[0];
+                                        Intent intent = new Intent(getContext(), OrderCostsFragment.class);
+                                        intent.putExtra("num", orderNum);
+                                        intent.putExtra("date", dateOfOrder);
+                                        startActivity(intent);
+                                    }
+                                });
+                                builderSingle.show();
+                            }
+                        }, new Response.ErrorListener() {
                     @Override
-                    public void run() {
-                        if (update.isFinish()) {
-                            String res = update.getUserId();
-                            List<String> list = extractFeuterFromJason(res);
-                            AlertDialog.Builder builderSingle = new AlertDialog.Builder(getContext());
-                            builderSingle.setIcon(R.drawable.ic_add);
-                            builderSingle.setTitle("اختار الاوردر");
-                            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_singlechoice);
+                    public void onErrorResponse(VolleyError error) {
 
-                            arrayAdapter.addAll(list);
-
-
-                            builderSingle.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-
-                            builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    String strName = arrayAdapter.getItem(which);
-                                    String orderNum = strName.split("-")[0];
-                                    Intent intent = new Intent(getContext(), OrderCostsFragment.class);
-                                    intent.putExtra("num", orderNum);
-                                    startActivity(intent);
-                                }
-                            });
-                            builderSingle.show();
-                        } else {
-                            handler.postDelayed(this, 100);
-                        }
+                        Log.e("onResponse", error.toString());
                     }
+                });
+                stringRequest.setShouldCache(false);
+                stringRequest.setShouldRetryConnectionErrors(true);
+                stringRequest.setShouldRetryServerErrors(true);
+                queue.add(stringRequest);
 
 
-                };
-                handler.post(runnableCode);
+                break;
+            case R.id.addNewCost:
+                final Intent intent = new Intent(getContext(), OrderCostsFragment.class);
+                final Calendar c = Calendar.getInstance();
+                int mYear = c.get(Calendar.YEAR);
+                int mMonth = c.get(Calendar.MONTH);
+                int mDay = c.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                intent.putExtra("date", year + "-" + (monthOfYear + 1) + "-" + dayOfMonth);
+                                intent.putExtra("num", "daily");
+                                startActivity(intent);
+                            }
+                        }, mYear, mMonth, mDay);
+                datePickerDialog.show();
 
                 break;
         }

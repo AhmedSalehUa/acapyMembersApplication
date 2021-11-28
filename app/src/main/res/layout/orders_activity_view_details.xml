@@ -375,27 +375,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingLeft="12dp"
-                    android:paddingRight="12dp">
-
-                    <TextView
-                        android:id="@+id/content_cost_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="16dp"
-                        android:layout_weight="1"
-                        android:background="@color/btnCost"
-                        android:gravity="center_horizontal"
-                        android:padding="10dp"
-                        android:text="@string/request_btn_cost_text"
-                        android:textAlignment="center"
-                        android:textColor="@android:color/white"
-                        android:textSize="20sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="12dp"
                     android:paddingRight="12dp"
                     android:paddingBottom="2dp">
 

@@ -18,11 +18,18 @@ package com.acpay.acapymembers;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,8 +44,8 @@ import androidx.core.content.ContextCompat;
 
 import com.acpay.acapymembers.Background.BackgroundService;
 import com.acpay.acapymembers.bottomNavigationFragement.Costs.TransitionFragement;
-import com.acpay.acapymembers.bottomNavigationFragement.Orders.OrderFragement;
 import com.acpay.acapymembers.bottomNavigationFragement.Messages.MessegeFragment;
+import com.acpay.acapymembers.bottomNavigationFragement.Orders.OrderFragement;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,21 +66,44 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-
+    //    public static final String APIHEADER = "http://41.178.166.108/acapy-trade/app";
     private BottomNavigationView bottomNav;
 
+    public static String getAPIHEADER(Context athis) {
+        if (athis == null) {
+            Log.e("api", "error");
+        }
+        SharedPreferences sharedPreferences = athis.getSharedPreferences("MainActivity", MODE_PRIVATE);
+        return sharedPreferences.getString("api", "http://41.178.166.108/acapy-trade/app");
+    }
 
     @Override
     protected void onDestroy() {
+        if (isMyServiceRunning(BackgroundService.class)) {
+            Intent serviceIntent = new Intent(this, BackgroundService.class);
+            stopService(serviceIntent);
+        } else {
 
+        }
         super.onDestroy();
     }
+
     int BottomMargin;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferences sharedPreferences = this.getSharedPreferences("MainActivity", MODE_PRIVATE);
+        if(sharedPreferences.getString("api", "no").equals("no")){
+            sharedPreferences.edit().putString("api", "http://41.178.166.108/acapy-trade/app");
+            sharedPreferences.edit().commit();
+        }
+
+
+
+
         FrameLayout framaeLayouat = (FrameLayout) findViewById(R.id.fragment_container);
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) framaeLayouat.getLayoutParams();
         BottomMargin = params.bottomMargin;
@@ -98,62 +128,127 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("permissionsFails", permissions.toString());
             }
         }).check();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        ConnectivityManager cm =
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        if (isConnected) {
+            LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            boolean gps_enabled = false;
+            boolean network_enabled = false;
+
+            try {
+                gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            } catch (Exception ex) {
+            }
+
+            try {
+                network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            } catch (Exception ex) {
+            }
+
+            if (!gps_enabled && !network_enabled) {
+
+                new AlertDialog.Builder(this)
+                        .setMessage("Location is Disapled")
+                        .setPositiveButton("open setting", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            }
+                        })
+                        .setNegativeButton("close app", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.addCategory(Intent.CATEGORY_HOME);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                        })
+                        .show();
+            } else {
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
 
-        checkPermission();
+                checkPermission();
 
-        startService();
+                startService();
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("TAG", "MainActivity.CODE_WRITE_SETTINGS_PERMISSION success");
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_SETTINGS) != PackageManager.PERMISSION_GRANTED) {
+                    Log.d("TAG", "MainActivity.CODE_WRITE_SETTINGS_PERMISSION success");
 
-        }
+                }
 
-        bottomNav = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.nav_bot_order:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
-                        break;
-                    case R.id.nav_bot_messege:
+                bottomNav = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+                bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.nav_bot_order:
+                                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
+                                break;
+                            case R.id.nav_bot_messege:
+                                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MessegeFragment()).commit();
+                                break;
+                            case R.id.nav_bot_costs:
+                                FrameLayout framaeLayouat = (FrameLayout) findViewById(R.id.fragment_container);
+                                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) framaeLayouat.getLayoutParams();
+                                params.setMargins(0, 0, 0, BottomMargin);
+                                framaeLayouat.setLayoutParams(params);
+
+                                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TransitionFragement(framaeLayouat)).commit();
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                Log.w("id", user.getUid());
+
+                String type = this.getIntent().getStringExtra("type");
+                if (type != null) {
+                    if (type.equals("message")) {
+                        bottomNav.setSelectedItemId(R.id.nav_bot_messege);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MessegeFragment()).commit();
-                        break;
-                    case R.id.nav_bot_costs:
-                        FrameLayout framaeLayouat = (FrameLayout) findViewById(R.id.fragment_container);
-                        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) framaeLayouat.getLayoutParams();
-                        params.setMargins(0, 0, 0, BottomMargin);
-                        framaeLayouat.setLayoutParams(params);
+                    } else if (type.equals("order")) {
+                        bottomNav.setSelectedItemId(R.id.nav_bot_order);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
+                    } else if (type.equals("costs")) {
+                        bottomNav.setSelectedItemId(R.id.nav_bot_costs);
+
 
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TransitionFragement(framaeLayouat)).commit();
-                        break;
+                    }
+                } else {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
+
                 }
-                return true;
+
             }
-        });
-        Log.w("id", user.getUid());
 
-        String type = this.getIntent().getStringExtra("type");
-        if (type != null) {
-            if (type.equals("message")) {
-                bottomNav.setSelectedItemId(R.id.nav_bot_messege);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MessegeFragment()).commit();
-            } else if (type.equals("order")) {
-                bottomNav.setSelectedItemId(R.id.nav_bot_order);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
-            } else if (type.equals("costs")) {
-                bottomNav.setSelectedItemId(R.id.nav_bot_costs);
-
-
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TransitionFragement(framaeLayouat)).commit();
-            }
         } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderFragement()).commit();
-
+            new AlertDialog.Builder(this)
+                    .setMessage("لا يوجد اتصال بالانترنت")
+                    .setPositiveButton("open setting", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton("close app", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    })
+                    .show();
         }
-
     }
 
     @Override
@@ -258,4 +353,5 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         status("offline");
     }
+
 }
