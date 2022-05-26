@@ -65,7 +65,7 @@ public class OrderCostsFragment extends AppCompatActivity {
         Log.e("num", orderNum);
         if (orderNum.equals("daily")) {
             getSupportActionBar().setTitle("مصاريف يومية");
-            TextView header =(TextView)findViewById(R.id.costsListText);
+            TextView header = (TextView) findViewById(R.id.costsListText);
             header.setText("مصاريف يومية");
             costsAdapter = new costsAdapter(OrderCostsFragment.this, new ArrayList<costs>());
             costsList.setAdapter(costsAdapter);
@@ -87,9 +87,9 @@ public class OrderCostsFragment extends AppCompatActivity {
             co.setText(DailyCostDate);
         } else {
             getSupportActionBar().setTitle("انتقالات");
-            TextView header =(TextView)findViewById(R.id.costsListText);
+            TextView header = (TextView) findViewById(R.id.costsListText);
             header.setText("انتقالات");
-            String costsapi =  getAPIHEADER(OrderCostsFragment.this)+"/getexpendeCost.php?order=" + orderNum;
+            String costsapi = getAPIHEADER(OrderCostsFragment.this) + "/getexpendeCost.php?order=" + orderNum;
             RequestQueue queue = Volley.newRequestQueue(OrderCostsFragment.this);
 
             Log.e("ApiUrl", costsapi);
@@ -107,7 +107,8 @@ public class OrderCostsFragment extends AppCompatActivity {
                     Log.e("onResponse", error.toString());
                 }
             });
-            stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+            stringRequest.setShouldCache(false);
+            stringRequest.setShouldRetryConnectionErrors(true);
             stringRequest.setShouldRetryServerErrors(true);
             queue.add(stringRequest);
             costsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -177,8 +178,9 @@ public class OrderCostsFragment extends AppCompatActivity {
                                 @Override
                                 public void onResponse(String response) {
 
-                                    api =  getAPIHEADER(OrderCostsFragment.this)+"/setexpendeCost.php?order=" + response;
-                                    Log.e("api",api); completeAdding();
+                                    api = getAPIHEADER(OrderCostsFragment.this) + "/setexpendeCost.php?order=" + response;
+                                    Log.e("api", api);
+                                    completeAdding();
                                 }
                             }, new Response.ErrorListener() {
                         @Override
@@ -187,13 +189,14 @@ public class OrderCostsFragment extends AppCompatActivity {
                             Log.e("onResponse", error.toString());
                         }
                     });
-                    stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+                    stringRequest.setShouldCache(false);
+                    stringRequest.setShouldRetryConnectionErrors(true);
                     stringRequest.setShouldRetryServerErrors(true);
                     queue.add(stringRequest);
-                    Log.e("api",Api);
+                    Log.e("api", Api);
 
                 } else {
-                    api =  getAPIHEADER(OrderCostsFragment.this)+"/setexpendeCost.php?order=" + orderNum;
+                    api = getAPIHEADER(OrderCostsFragment.this) + "/setexpendeCost.php?order=" + orderNum;
                     completeAdding();
                 }
 
@@ -230,7 +233,13 @@ public class OrderCostsFragment extends AppCompatActivity {
                 if (selectedItem == -1) {
 
                 } else {
+                    TextView texta = (TextView) findViewById(R.id.cost_amount_add);
+                    TextView coa = (TextView) findViewById(R.id.cost_date_add);
+                    TextView notea = (TextView) findViewById(R.id.cost_details_add);
                     costsAdapter.remove(costsAdapter.getItem(selectedItem));
+                    texta.setText("");
+                    coa.setText(DailyCostDate);
+                    notea.setText("");
                 }
                 return true;
         }
@@ -261,14 +270,15 @@ public class OrderCostsFragment extends AppCompatActivity {
                 Log.e("onResponse", error.toString());
             }
         });
-        stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldCache(false);
+        stringRequest.setShouldRetryConnectionErrors(true);
         stringRequest.setShouldRetryServerErrors(true);
         queue.add(stringRequest);
 
     }
 
     private void setUpApi() {
-        Api = getAPIHEADER(OrderCostsFragment.this)+"/addOrdersFake.php?"
+        Api = getAPIHEADER(OrderCostsFragment.this) + "/addOrdersFake.php?"
                 + "&date=" + DailyCostDate
                 + "&username[]=" + FirebaseAuth.getInstance().getCurrentUser().getDisplayName()
                 + "&uid[]=" + FirebaseAuth.getInstance().getCurrentUser().getUid();

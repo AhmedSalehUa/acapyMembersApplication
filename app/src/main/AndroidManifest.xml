@@ -49,6 +49,24 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".bottomNavigationFragement.Balance.AddBalance"
+            android:label="@string/addBalance"
+            android:theme="@style/EditorTheme">
+
+        </activity>
+        <activity
+            android:name=".bottomNavigationFragement.Store.AddExitItems"
+            android:label="@string/addExite"
+            android:theme="@style/EditorTheme">
+
+        </activity>
+        <activity
+            android:name=".bottomNavigationFragement.Store.AddReturnedItems"
+            android:label="@string/addRetunr"
+            android:theme="@style/EditorTheme">
+
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
 

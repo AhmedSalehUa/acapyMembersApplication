@@ -139,7 +139,7 @@ public class OrderFragement extends Fragment {
 
     private void performApiRequest() {
         RequestQueue queue = Volley.newRequestQueue(getContext());
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, getAPIHEADER(getContext()),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, ApiUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

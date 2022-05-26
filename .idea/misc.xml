@@ -3,6 +3,27 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/drawable/rounded_text_area.xml" value="0.37864583333333335" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_add_store_exit.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_notes_adddevice.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_store.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_store_exit.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_store_exit_add.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_store_items.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_store_return.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_store_return_add.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_transition.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_transition_summary.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_transitions_details.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_transitions_details_items_content.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/activity_transitions_details_items_content_list.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/balance_add_activity.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/balance_item.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/blance_activity.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/login_activity.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/message_activity.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/message_activity_item.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/message_activity_item_reciver.xml" value="0.3625" />
         <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/orders_activity.xml" value="0.42900485436893204" />
         <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/orders_activity_list.xml" value="0.42900485436893204" />
         <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/orders_activity_list_content.xml" value="0.42900485436893204" />
@@ -10,11 +31,19 @@
         <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/orders_activity_list_content_costs.xml" value="0.28046875" />
         <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/orders_activity_list_header.xml" value="0.42900485436893204" />
         <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/orders_activity_list_item_cost.xml" value="0.28046875" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/orders_activity_view_details.xml" value="0.3484375" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/layout/spinner_layoout.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/menu/add_transition.xml" value="0.3484375" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/menu/bottom_nav.xml" value="0.3484375" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/menu/costs.xml" value="0.3484375" />
         <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/menu/order.xml" value="0.54375" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/menu/save_nav.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/menu/store_nav.xml" value="0.3625" />
+        <entry key="..\:/projects/Implementation for institutions/Acapy Trade Applications/AcapyMembers/app/src/main/res/menu/transitions_nav.xml" value="0.19114583333333332" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

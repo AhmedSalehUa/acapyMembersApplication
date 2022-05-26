@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.acpay.acapymembers.R;
+import com.acpay.acapymembers.bottomNavigationFragement.Balance.BalanceFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class TransitionFragement extends Fragment {
@@ -38,35 +39,29 @@ public class TransitionFragement extends Fragment {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
+                    case R.id.nav_transitions_summary:
+                        getFragmentManager().beginTransaction().replace(R.id.transition_container, new TransitionSummary(bottomNav)).commit();
+                        break;
                     case R.id.nav_transitions_pay:
                         getFragmentManager().beginTransaction().replace(R.id.transition_container, new TransitionPendingFragment(bottomNav)).commit();
                         break;
                     case R.id.nav_transitions_paied:
                         getFragmentManager().beginTransaction().replace(R.id.transition_container, new TransitionDoneFragment(bottomNav)).commit();
                         break;
+
+                    case R.id.nav_transitions_balance:
+                        getFragmentManager().beginTransaction().replace(R.id.transition_container,new BalanceFragment(bottomNav)).commit();
+                        break;
                 }
                 return true;
             }
         });
-
-        getFragmentManager().beginTransaction().replace(R.id.transition_container, new TransitionPendingFragment(bottomNav)).commit();
+        getFragmentManager().beginTransaction().replace(R.id.transition_container, new TransitionSummary(bottomNav)).commit();
 
 
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("انتقالات");
         return rootview;
-    }
-
-    private void enableBottomNav() {
-        for (int i = 0; i < bottomNav.getMenu().size(); i++) {
-            bottomNav.getMenu().getItem(i).setEnabled(true);
-        }
-    }
-
-    private void disableBottomNav() {
-        for (int i = 0; i < bottomNav.getMenu().size(); i++) {
-            bottomNav.getMenu().getItem(i).setEnabled(false);
-        }
     }
 
     @Override

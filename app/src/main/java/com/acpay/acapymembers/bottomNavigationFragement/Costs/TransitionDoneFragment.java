@@ -25,6 +25,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
@@ -50,22 +51,25 @@ public class TransitionDoneFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.activity_transitions_details, container, false);
         final ListView listView = rootview.findViewById(R.id.costList);
+        FloatingActionButton addExit = rootview.findViewById(R.id.addTransitions);
+        addExit.setVisibility(View.GONE);
         progressBar = rootview.findViewById(R.id.costListProgress);
         emptyList = rootview.findViewById(R.id.costListText);
         emptyList.setText("جارى التحميل");
-        String api = getAPIHEADER(getContext())+"/getTransitions.php?name=" + getName() + "&status=true";
+        adapter = new TransitionDetailsAdapter(getContext(), new ArrayList<>(), "details");
+        listView.setAdapter(adapter);
+        listView.setEmptyView(emptyList);
+        String api = getAPIHEADER(getContext()) + "/getTransitions.php?name=" + getName() + "&status=true";
         RequestQueue queue = Volley.newRequestQueue(getContext());
         StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         List<TransitionsDetails> list = extractTransitionsfromapi(response);
-                        adapter = new TransitionDetailsAdapter(getContext(), list, "details");
-                        listView.setAdapter(adapter);
-                        listView.setEmptyView(emptyList);
+                        adapter.addAll(list);
+                        adapter.notifyDataSetChanged();
                         progressBar.setVisibility(View.GONE);
                         emptyList.setText("لايوجد انتقالات");
-
                         Log.e("as", list.toString());
                     }
                 }, new Response.ErrorListener() {
@@ -75,7 +79,8 @@ public class TransitionDoneFragment extends Fragment {
                 Log.e("onResponse", error.toString());
             }
         });
-        stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldCache(false);
+        stringRequest.setShouldRetryConnectionErrors(true);
         stringRequest.setShouldRetryServerErrors(true);
         queue.add(stringRequest);
 

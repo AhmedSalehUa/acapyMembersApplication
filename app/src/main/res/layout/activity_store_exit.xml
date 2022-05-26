@@ -1,34 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
-    android:layout_marginBottom="40dp"
-    android:orientation="vertical">
+    android:layout_marginBottom="60dp">
 
     <ListView
-        android:id="@+id/costList"
+        android:id="@+id/store_exit_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:divider="@color/fui_transparent"
-        android:dividerHeight="10dp"
-        tools:listitem="@layout/activity_transitions_details_items_content" />
+        android:layout_height="match_parent" />
 
     <ProgressBar
-        android:id="@+id/costListProgress"
+        android:id="@+id/exit_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
     <TextView
-        android:id="@+id/costListText"
+        android:id="@+id/empty_exit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:text="no items" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
 
-        android:id="@+id/addTransitions"
+        android:id="@+id/addExitItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

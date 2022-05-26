@@ -15,4 +15,8 @@
         android:id="@+id/nav_bot_costs"
         android:icon="@drawable/ic_baseline_attach_money_24"
         android:title="@string/nav_bot_costs"></item>
+    <item
+        android:id="@+id/nav_bot_store"
+        android:icon="@drawable/ic_baseline_store_24"
+        android:title="@string/nav_bot_store"></item>
 </menu>

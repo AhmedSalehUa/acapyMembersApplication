@@ -1,4 +1,4 @@
-package com.acpay.acapymembers.bottomNavigationFragement.Costs;
+package com.acpay.acapymembers.bottomNavigationFragement.Store;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,11 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.acpay.acapymembers.R;
+import com.acpay.acapymembers.bottomNavigationFragement.Costs.Transitions;
+import com.acpay.acapymembers.bottomNavigationFragement.Costs.TransitionsAdapter;
 
 import java.util.HashSet;
 import java.util.List;
 
-public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
+public class StoreAdapter extends ArrayAdapter<storeItems> {
     private HashSet<Integer> unfoldedIndexes = new HashSet<>();
 
     private View.OnClickListener defaultediteBtnClickListener;
@@ -25,7 +27,7 @@ public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
     private View.OnClickListener defaultRequestBtnClickListener;
     String target;
 
-    public TransitionDetailsAdapter(Context context, List<TransitionsDetails> objects,String target) {
+    public StoreAdapter(Context context, List<storeItems> objects, String target) {
         super(context, 0, objects);
         this.target=target;
     }
@@ -33,28 +35,25 @@ public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        final TransitionsDetails item = getItem(position);
+        final storeItems item = getItem(position);
 
         View cell=convertView;
-        ViewHolder viewHolder;
+         ViewHolder viewHolder;
         if (cell == null) {
-            viewHolder = new ViewHolder();
+            viewHolder = new  ViewHolder();
             LayoutInflater vi = LayoutInflater.from(getContext());
-            cell = vi.inflate(R.layout.activity_transitions_details_items_content, parent, false);
+            cell = vi.inflate(R.layout.activity_store_items, parent, false);
 
-            viewHolder.place = cell.findViewById(R.id.tarnsition_content_date);
-
-            viewHolder.ContenetorderNum = cell.findViewById(R.id.tarnsition_content_total);
-            viewHolder.Contenettime = cell.findViewById(R.id.tarnsition_content_time);
-
-            viewHolder.detailsList = cell.findViewById(R.id.tarnsition_content_list);
-            viewHolder.edite=cell.findViewById(R.id.tarnsition_content_edite);
+            viewHolder.place = cell.findViewById(R.id.store_show_details);
+            viewHolder.date = cell.findViewById(R.id.store_show_date);
+            viewHolder.detailsList = cell.findViewById(R.id.list_of_products);
+            viewHolder.edite=cell.findViewById(R.id.tarnsition_content_delete);
 
             cell.setTag(viewHolder);
         } else {
             // for existing cell set valid valid state(without animation)
 
-            viewHolder = (ViewHolder) cell.getTag();
+            viewHolder = ( ViewHolder) cell.getTag();
         }
 
         if (null == item) {
@@ -62,19 +61,17 @@ public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
         }
 
 
-        viewHolder.Contenettime.setText(item.getDate()+" " +item.getTime());
 
-        viewHolder.place.setText(item.getPlace()+"-"+item.getLocation());
+        viewHolder.place.setText(item.getDetails());
+        viewHolder.date.setText(item.getDate());
         List<Transitions> list = item.getList();
         TransitionsAdapter myListAdapter = new TransitionsAdapter(getContext(),list);
-        Log.e("aasasa", String.valueOf(item.getList().size()));
         viewHolder.detailsList.setAdapter(myListAdapter);
 
         double total =0;
         for (int y=0;y<list.size();y++){
-          total +=   Double.parseDouble(list.get(y).getAmount());
+            total +=   Double.parseDouble(list.get(y).getAmount());
         }
-        viewHolder.ContenetorderNum.setText(Double.toString(total));
         int totalHeight = 0;
         for (int size = 0; size < myListAdapter.getCount(); size++) {
             View listItem = myListAdapter.getView(size, null, viewHolder.detailsList);
@@ -109,8 +106,7 @@ public class TransitionDetailsAdapter extends ArrayAdapter<TransitionsDetails> {
 
     private static class ViewHolder {
         TextView place;
-        TextView ContenetorderNum;
-        TextView Contenettime;
+        TextView date;
         ListView detailsList;
         TextView edite;
     }

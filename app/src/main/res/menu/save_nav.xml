@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/addNewCost"
-        android:icon="@drawable/ic_add"
-
-        android:title="اضافة مصاريف" />
+        android:id="@+id/action_save"
+        android:title="@string/action_save"
+        android:icon="@drawable/ic_save"
+        app:showAsAction="always" />
 </menu>

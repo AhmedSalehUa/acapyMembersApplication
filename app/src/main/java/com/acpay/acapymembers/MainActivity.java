@@ -46,6 +46,7 @@ import com.acpay.acapymembers.Background.BackgroundService;
 import com.acpay.acapymembers.bottomNavigationFragement.Costs.TransitionFragement;
 import com.acpay.acapymembers.bottomNavigationFragement.Messages.MessegeFragment;
 import com.acpay.acapymembers.bottomNavigationFragement.Orders.OrderFragement;
+import com.acpay.acapymembers.bottomNavigationFragement.Store.StoreFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("api", "error");
         }
         SharedPreferences sharedPreferences = athis.getSharedPreferences("MainActivity", MODE_PRIVATE);
-        return sharedPreferences.getString("api", "http://41.178.166.108/acapy-trade/app");
+        return sharedPreferences.getString("api", "http://196.221.207.192/acapy-trade/app");
     }
 
     @Override
@@ -201,6 +202,13 @@ public class MainActivity extends AppCompatActivity {
                                 framaeLayouat.setLayoutParams(params);
 
                                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TransitionFragement(framaeLayouat)).commit();
+                                break;
+                            case R.id.nav_bot_store:
+                                FrameLayout frameLayout = (FrameLayout) findViewById(R.id.fragment_container);
+                                ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) frameLayout.getLayoutParams();
+                                marginLayoutParams.setMargins(0, 0, 0, BottomMargin);
+                                frameLayout.setLayoutParams(marginLayoutParams);
+                                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StoreFragment(frameLayout)).commit();
                                 break;
                         }
                         return true;
