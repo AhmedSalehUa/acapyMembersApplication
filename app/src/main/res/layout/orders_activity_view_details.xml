@@ -186,11 +186,16 @@
 
                     <RelativeLayout
                         android:layout_width="match_parent"
+<<<<<<< HEAD
                         android:layout_height="50dp">
+=======
+                        android:layout_height="wrap_content">
+>>>>>>> e657a51ca46385b1f80c980290f93f6b456eb68a
 
                         <TextView
                             android:id="@+id/content_fixType"
                             style="@style/TitleBadgeText"
+<<<<<<< HEAD
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentStart="true"
@@ -204,11 +209,25 @@
                             android:layout_above="@id/content_fixType"
                             android:layout_alignStart="@id/content_fixType"
                             android:layout_alignLeft="@id/content_fixType"
+=======
+                            android:textColor="@android:color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/content_fixTypeText" />
+
+                        <TextView
+                            android:id="@+id/content_fixTypeText"
+                            style="@style/TitleBadgeTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+>>>>>>> e657a51ca46385b1f80c980290f93f6b456eb68a
                             android:text="@string/requests_count_badge" />
 
                         <TextView
                             android:id="@+id/content_dliverCost"
                             style="@style/TitleBadgeText"
+<<<<<<< HEAD
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
@@ -221,10 +240,27 @@
                             android:layout_height="wrap_content"
                             android:layout_above="@id/content_dliverCost"
                             android:layout_alignParentRight="true"
+=======
+                            android:textColor="@android:color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/content_fixType"
+                            android:layout_toRightOf="@id/content_dliverCostText" />
+
+                        <TextView
+                            android:id="@+id/content_dliverCostText"
+                            style="@style/TitleBadgeTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/content_fixType"
+                            android:layout_alignParentLeft="true"
+                            android:layout_marginTop="10dp"
+>>>>>>> e657a51ca46385b1f80c980290f93f6b456eb68a
                             android:text="@string/weight_badge" />
 
                         <TextView
                             android:id="@+id/content_matter"
+<<<<<<< HEAD
                             style="@style/TitleBadgeText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -238,11 +274,32 @@
                             android:layout_above="@id/content_matter"
                             android:layout_alignStart="@id/content_matter"
                             android:layout_alignLeft="@id/content_matter"
+=======
+                            android:layout_marginTop="10dp"
+                            style="@style/TitleBadgeText"
+                            android:textColor="@android:color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/content_dliverCost"
+                            android:layout_toRightOf="@id/content_matterText" />
+
+                        <TextView
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/content_matterText"
+                            style="@style/TitleBadgeTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/content_dliverCost"
+                            android:layout_alignParentLeft="true"
+>>>>>>> e657a51ca46385b1f80c980290f93f6b456eb68a
                             android:text="@string/pledge_badge" />
                     </RelativeLayout>
                 </LinearLayout>
 
+<<<<<<< HEAD
                 <!-- divider line -->
+=======
+>>>>>>> e657a51ca46385b1f80c980290f93f6b456eb68a
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -373,6 +430,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingLeft="12dp"
+<<<<<<< HEAD
                     android:paddingRight="12dp">
 
                     <TextView
@@ -394,6 +452,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingLeft="12dp"
+=======
+>>>>>>> e657a51ca46385b1f80c980290f93f6b456eb68a
                     android:paddingRight="12dp"
                     android:paddingBottom="2dp">
 

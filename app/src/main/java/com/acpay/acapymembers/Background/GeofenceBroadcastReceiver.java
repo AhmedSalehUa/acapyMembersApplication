@@ -7,7 +7,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.List;

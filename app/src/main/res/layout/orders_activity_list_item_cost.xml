@@ -20,7 +20,7 @@
     <LinearLayout
         android:id="@+id/costsListTextAdd"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="50dp"
         android:layout_below="@id/costsListText"
         android:layout_marginBottom="40dp"
         android:orientation="horizontal">

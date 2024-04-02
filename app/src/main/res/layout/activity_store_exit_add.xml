@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/costsListText"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@id/checkBoxesList"
+        android:gravity="center_horizontal"
+        android:paddingTop="20dp"
+        android:text="@string/store_out"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="25sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp">
+
+        <EditText
+            android:id="@+id/store_client"
+            style="@style/EditorFieldStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:hint="@string/store_client_hint" />
+
+        <TextView
+            style="@style/CategoryStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/store_client" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="5dp"
+        android:paddingHorizontal="20dp">
+        <ImageView
+            android:id="@+id/store_add_date"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/ic_baseline_date_range_24" />
+        <EditText
+            android:id="@+id/store_date"
+            style="@style/EditorFieldStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:hint="@string/store_date_hint" />
+
+        <TextView
+            style="@style/CategoryStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/store_date" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/costsListTextAdd"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/costsListText"
+        android:layout_marginBottom="40dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="@drawable/rounded_check_box_body">
+
+            <EditText
+                android:id="@+id/cost_amount_add"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_text_area"
+                android:hint="@string/store_amount"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:background="@drawable/rounded_check_box_body">
+            <Spinner
+                android:id="@+id/cost_details_Spinner"
+                android:enabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/store_product" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_check_box_body">
+
+            <EditText
+                android:id="@+id/cost_id_add"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_text_area"
+                android:hint="@string/store_id" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/costList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/costsListTextAdd"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10sp"
+        tools:listitem="@layout/orders_activity_list_content_costs" />
+
+</LinearLayout>

@@ -59,8 +59,8 @@
     <string name="fcm_message">FCM Message</string>
 
 
-    <string name="nav_bot_order">Orders</string>
-    <string name="nav_bot_messege">Messeges</string>
+    <string name="nav_bot_order">الاوردرات</string>
+    <string name="nav_bot_messege">الرسائل</string>
 
 
     <string name="order_id_mock" translatable="false"># 1234–5678</string>
@@ -90,7 +90,7 @@
     <string name="title_activity_main2">Main2Activity</string>
 
     <string name="times">1000*60*30</string>
-    <string name="request_btn_pen_text">تاجيل لوجود مشكله</string>
+    <string name="request_btn_pen_text">تاجيل</string>
     <string name="request_btn_note_text">اضافة ملاحظة</string>
     <string name="request_btn_save_text">الحصول على الخطوات</string>
 
@@ -112,7 +112,7 @@
     <string name="cost_details">جهة الصرف</string>
     <string name="cost_date">التاريخ</string>
     <string name="action_save">save</string>
-    <string name="action_add">add</string>
+    <string name="action_add">اضافة جهاز</string>
     <string name="progress_name">المطلوب تنفيذه</string>
     <string name="cost_name">تنقلات</string>
     <string name="request_btn_cost_text">انتقالات</string>
@@ -121,4 +121,47 @@
     <string name="label">ملاحظات</string>
     <string name="content_description_end_icon">ملاحظات</string>
     <string name="noProgress">لايوجد خطوات</string>
+<<<<<<< HEAD
+=======
+    <string name="nav_bot_costs">انتقالات</string>
+
+    <string name="deivceName">Device Name</string>
+    <string name="deivceType">Device Type</string>
+    <string name="deivceModel">Device Model</string>
+    <string name="deivceDetails">Device Details</string>
+    <string name="deivceIp">IP</string>
+    <string name="deivcePort">Port</string>
+    <string name="deivceUsername">UserName</string>
+    <string name="deivcePassword">Password</string>
+    <string name="deivceEmail">E-Mail</string>
+    <string name="deivceEmailPassword">E-Mail Password</string>
+    <string name="addorder_user">Place Name</string>
+    <string name="choose">choose place</string>
+    <string name="nav_transitions_pay">فى انتظار الدفع</string>
+    <string name="nav_transitions_paied">تم الدفع</string>
+    <string name="action_add_ip">تعديل السيرفر</string>
+    <string name="nav_transitions_Banks">المسحوبات</string>
+    <string name="addBalance">اضافة مسحوبات</string>
+    <string name="nav_bot_store">المخزن</string>
+    <string name="nav_store_out">صرف</string>
+    <string name="nav_store_in">مرتجع</string>
+    <string name="addExite">صرف من المخزن</string>
+    <string name="addRetunr">مرتجع</string>
+    <string name="nav_transitions_summary">حسابي</string>
+    <string name="store_product">الصنف</string>
+    <string name="store_amount">العدد</string>
+    <string name="store_out">صرف من المخزن</string>
+    <string name="store_in">مرتجع للمخزن</string>
+    <string name="store_client">الخاص ب</string>
+    <string name="store_client_hint">عملية او صيانة + اسم العميل</string>
+    <string name="balance_details">تحت الحساب او باقي</string>
+    <string name="balance_details_text">التفاصيل</string>
+    <string name="transition_summary_total">اجمالي انتقالاتك</string>
+    <string name="transition_summary_balance">اجمالي المسحوبات</string>
+    <string name="transition_summary_rest">الباقي</string>
+    <string name="store_date">التاريخ</string>
+    <string name="store_date_hint">تاريخ السحب من المخزن</string>
+    <string name="store_id">م</string>
+    <string name="store_return_hint">اختار من اوامر الصرف السابقة</string>
+>>>>>>> e657a51ca46385b1f80c980290f93f6b456eb68a
 </resources>

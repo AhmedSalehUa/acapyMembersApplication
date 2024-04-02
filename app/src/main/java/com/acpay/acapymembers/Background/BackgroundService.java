@@ -1,7 +1,9 @@
 package com.acpay.acapymembers.Background;
 
+import static com.acpay.acapymembers.Background.App.CHANNEL_ID;
+import static com.acpay.acapymembers.MainActivity.getAPIHEADER;
+
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,8 +11,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,7 +20,6 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,49 +28,32 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
-import com.acpay.acapymembers.JasonReponser;
-import com.acpay.acapymembers.LocationProvider.GPSTracker;
 import com.acpay.acapymembers.MainActivity;
+import com.acpay.acapymembers.Order.Order;
+import com.acpay.acapymembers.Order.OrderUtilies;
 import com.acpay.acapymembers.R;
-import com.acpay.acapymembers.User;
-import com.acpay.acapymembers.bottomNavigationFragement.messages.Message;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.BuildConfig;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
-import static com.acpay.acapymembers.Background.App.CHANNEL_ID;
 
 public class BackgroundService extends Service implements LocationListener {
     private FirebaseRemoteConfig mRemoteConfig;
-
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
-
-      private ChildEventListener mChildEventListener;
-
-
 
     private boolean getLocationOnOf = false;
     private String locationState = "setLocationOnOff";
@@ -108,12 +90,14 @@ public class BackgroundService extends Service implements LocationListener {
 
     protected LocationManager locationManager;
     FirebaseUser user;
+
     @Override
     public void onCreate() {
         user = FirebaseAuth.getInstance().getCurrentUser();
         getLocation();
         firebaseRemoteConfig();
         fetchConfig();
+<<<<<<< HEAD
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference().child("messages").child(user.getDisplayName());
         mChildEventListener = new ChildEventListener() {
@@ -121,37 +105,9 @@ public class BackgroundService extends Service implements LocationListener {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Message message = snapshot.getValue(Message.class);
                 if (message.getName() == user.getDisplayName()) {
+=======
+>>>>>>> e657a51ca46385b1f80c980290f93f6b456eb68a
 
-                } else {
-                    notifyME(message.getName(), message.getText());
-                }
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Message message = snapshot.getValue(Message.class);
-                if (message.getName() == user.getDisplayName()) {
-
-                } else {
-                    notifyME(message.getName(), message.getText());
-                }
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        };
-        mDatabaseReference.addChildEventListener(mChildEventListener);
         super.onCreate();
     }
 
@@ -176,6 +132,7 @@ public class BackgroundService extends Service implements LocationListener {
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
+
     private void firebaseRemoteConfig() {
         mRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
@@ -235,12 +192,11 @@ public class BackgroundService extends Service implements LocationListener {
                 .setContentTitle("Acapy Members let this app running in background")
                 .setContentText("")
                 .setContentText(input)
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.appbackground)
                 .setContentIntent(pendingIntent)
                 .build();
         startForeground(1, notification);
         getLocation();
-
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             @Override
@@ -251,8 +207,7 @@ public class BackgroundService extends Service implements LocationListener {
                 if (longitude == 0.0 || latitude == 0.0 || !net || !gps) {
                     getLocation();
                     if (!gps) {
-                        Toast.makeText(BackgroundService.this, "gps is disabled", Toast.LENGTH_SHORT).show();
-                        getLocation();
+                         getLocation();
                     }
                     if (!net) {
                         ConnectivityManager cm =
@@ -264,8 +219,7 @@ public class BackgroundService extends Service implements LocationListener {
                         if (isConnected) {
                             getLocation();
                         } else {
-                            Toast.makeText(BackgroundService.this, "Network is disabled", Toast.LENGTH_SHORT).show();
-                            getLocation();
+                             getLocation();
                         }
                     }
                 } else {
@@ -359,6 +313,7 @@ public class BackgroundService extends Service implements LocationListener {
     @Override
     public void onDestroy() {
         getLocation();
+        stopForeground(1);
         super.onDestroy();
     }
 
@@ -371,14 +326,27 @@ public class BackgroundService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-//        IntentFilter filter=new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-//        filter.addAction(Intent.LOCA);
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        String api = "https://www.app.acapy-trade.com/locationInserter.php?id="+user.getUid()
-                + "&latitude="+latitude + "&longlatitude="+longitude+"&date="+new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
-        final JasonReponser updateProgress = new JasonReponser();
-        updateProgress.setFinish(false);
-        updateProgress.execute(api);
+        String api =  getAPIHEADER(BackgroundService.this)+"/locationInserter.php?id=" + user.getUid()
+                + "&latitude=" + latitude + "&longlatitude=" + longitude + "&date=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).format(new Date());
+        RequestQueue queue = Volley.newRequestQueue(BackgroundService.this);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, api,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Log.e("onResponse", error.toString());
+            }
+        });
+        stringRequest.setShouldCache(false);stringRequest.setShouldRetryConnectionErrors(true);
+        stringRequest.setShouldRetryServerErrors(true);
+        queue.add(stringRequest);
+
     }
 }

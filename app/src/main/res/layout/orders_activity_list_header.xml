@@ -1,56 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_margin="10dp"
-    android:layout_height="wrap_content"
+    android:layout_height="180dp"
+    android:baselineAligned="false"
+    android:layoutDirection="rtl"
     android:orientation="horizontal">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="155dp"
-        android:layout_weight="3"
-        android:background="@color/bgTitleLeft"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:background="@color/colorPrimary"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingTop="20dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="20dp">
+        android:paddingRight="10dp">
+
 
         <TextView
             android:id="@+id/title_orderNum"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="26sp" />
 
         <TextView
             android:id="@+id/title_time_label"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@id/title_orderNum"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
         <TextView
             android:id="@+id/title_date_label"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/title_time_label"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
+            android:layout_below="@id/title_time_label"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:textAlignment="center"
             android:textColor="@android:color/white"
             android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/title_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title_date_label"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="15sp" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@color/bgTitleRight"
         android:paddingStart="15dp"
@@ -60,6 +75,17 @@
         android:paddingRight="20dp"
         android:paddingBottom="20dp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="اضغط للتفاصيل"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimary"
+            android:textSize="48sp"
+            android:textStyle="bold" />
+
         <ImageView
             android:id="@+id/title_from_to_dots"
             android:layout_width="wrap_content"
@@ -68,7 +94,8 @@
             android:layout_alignParentLeft="true"
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
-            android:src="@drawable/from_to_purple" />
+            android:src="@drawable/from_to_purple"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/title_location"
@@ -82,7 +109,8 @@
             android:fadingEdge="horizontal"
             android:singleLine="true"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/title_from_to_dots_divider"
@@ -93,7 +121,8 @@
             android:layout_marginBottom="5dp"
             android:layout_toEndOf="@+id/title_from_to_dots"
             android:layout_toRightOf="@+id/title_from_to_dots"
-            android:src="@color/contentDividerLine" />
+            android:src="@color/contentDividerLine"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/title_place"
@@ -106,59 +135,77 @@
             android:fadingEdge="horizontal"
             android:singleLine="true"
             android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/title_fixType"
-            style="@style/TitleBadgeText"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/fix"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentBottom="true" />
+            android:layout_below="@id/title_place"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-        <TextView
-            style="@style/TitleBadgeTitle"
-            android:layout_width="wrap_content"
+            <TextView
+                style="@style/TitleBadgeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="@string/requests_count_badge" />
+
+            <TextView
+                android:id="@+id/title_fixType"
+                style="@style/TitleBadgeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/matter"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/title_fixType"
-            android:layout_alignStart="@id/title_fixType"
-            android:layout_alignLeft="@id/title_fixType"
-            android:text="@string/requests_count_badge" />
+            android:layout_below="@id/fix"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-        <TextView
-            android:id="@+id/title_dliverCost"
-            style="@style/TitleBadgeText"
-            android:layout_width="wrap_content"
+            <TextView
+                style="@style/TitleBadgeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pledge_badge" />
+
+            <TextView
+                android:id="@+id/title_matter"
+                style="@style/TitleBadgeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/amm"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true" />
+            android:layout_below="@id/matter"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-        <TextView
-            style="@style/TitleBadgeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/title_dliverCost"
-            android:layout_alignParentRight="true"
-            android:text="@string/weight_badge" />
+            <TextView
+                style="@style/TitleBadgeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/weight_badge" />
 
-        <TextView
-            android:id="@+id/title_matter"
-            style="@style/TitleBadgeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
-
-        <TextView
-            style="@style/TitleBadgeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/title_matter"
-            android:layout_alignStart="@id/title_matter"
-            android:layout_alignLeft="@id/title_matter"
-            android:text="@string/pledge_badge" />
-
+            <TextView
+                android:id="@+id/title_dliverCost"
+                style="@style/TitleBadgeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp" />
+        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>
