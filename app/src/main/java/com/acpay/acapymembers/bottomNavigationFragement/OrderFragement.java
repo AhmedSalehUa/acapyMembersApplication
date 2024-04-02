@@ -27,10 +27,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.acpay.acapymembers.R;
 import com.acpay.acapymembers.User;
 import com.acpay.acapymembers.floadingCell.FoldingCell;
-import com.acpay.acapymembers.oreder.Order;
-import com.acpay.acapymembers.oreder.OrderAdapter;
-import com.acpay.acapymembers.oreder.OrderDone;
-import com.acpay.acapymembers.oreder.OrderLoader;
+import com.acpay.acapymembers.Order.Order;
+import com.acpay.acapymembers.Order.OrderAdapter;
+import com.acpay.acapymembers.Order.OrderDone;
+import com.acpay.acapymembers.Order.OrderLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -67,7 +67,7 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
             }
         });
 
-        theListView = rootView.findViewById(R.id.order_list);
+        theListView = rootView.findViewById(R.id.orderMainList);
 
 
         adapter = new OrderAdapter(getContext(), new ArrayList<Order>());
@@ -77,11 +77,8 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
         theListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-                Log.e("asas", "clicked");
-                ((FoldingCell) view).toggle(false);
-
-                adapter.registerToggle(pos);
-
+                Order order = adapter.getItem(pos);
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrderDetailsFragement(order)).commit();
             }
         });
 
@@ -101,156 +98,157 @@ public class OrderFragement extends Fragment implements LoaderCallbacks<List<Ord
     public void onLoadFinished(@NonNull Loader<List<Order>> loader, List<Order> data) {
 
         adapter.clear();
-
-        if (data != null && !data.isEmpty()) {
-            adapter.addAll(data);
-            for (int i = 0; i < adapter.getCount(); i++) {
-                final int postion = i;
-
-                adapter.getItem(i).setRequestBtnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setMessage("يرجى اضافة السبب للملاحظات اولا").setTitle("هل تريد تاجيل الاوردر لوجود مشكلة")
-                                .setCancelable(false)
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                                        final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "pending");
-                                        final Handler handler = new Handler();
-                                        Runnable runnableCode = new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (orderDone.isFinish()) {
-                                                    if (orderDone.getResponse().equals("1")) {
-                                                        Toast.makeText(getContext(), "Pended", Toast.LENGTH_SHORT).show();
-                                                        loaderManager.restartLoader(ORDER_LOADER_ID, null, OrderFragement.this);
-                                                        loaderManager.initLoader(ORDER_LOADER_ID, null, OrderFragement.this);
-                                                    } else {
-                                                        Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                } else {
-                                                    handler.postDelayed(this, 100);
-                                                }
-                                            }
-                                        };
-                                        handler.post(runnableCode);
-                                    }
-                                })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        final AlertDialog alert = builder.create();
-                        alert.show();
-
-                    }
-                });
-                adapter.getItem(i).setAddNotesBtnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
-                        alertDialog.setTitle("اضافة للملاحظات");
-                        LinearLayout container = new LinearLayout(getContext());
-                        container.setOrientation(LinearLayout.VERTICAL);
-                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        lp.setMargins(20, 20, 20, 20);
-                        final EditText input = new EditText(getContext());
-                        input.setLayoutParams(lp);
-                        input.setGravity(android.view.Gravity.TOP | android.view.Gravity.LEFT);
-                        input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                        input.setLines(1);
-                        input.setMaxLines(1);
-                        input.setText(adapter.getItem(postion).getNotes());
-                        container.addView(input, lp);
-
-                        alertDialog.setView(container);
-                        alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "updateNotes",input.getText().toString());
-                                final Handler handler = new Handler();
-                                Runnable runnableCode = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (orderDone.isFinish()) {
-                                            if (orderDone.getResponse().equals("1")) {
-                                                Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT).show();
-                                                loaderManager.restartLoader(ORDER_LOADER_ID, null, OrderFragement.this);
-                                                loaderManager.initLoader(ORDER_LOADER_ID, null, OrderFragement.this);
-                                            } else {
-                                                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
-                                            }
-                                        } else {
-                                            handler.postDelayed(this, 100);
-                                        }
-                                    }
-                                };
-                                handler.post(runnableCode);
-                            }
-                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                Toast.makeText(getContext(), "canceled", Toast.LENGTH_SHORT).show();
-                            }
-                        }).show();
-                    }
-                });
-                adapter.getItem(i).setDoneBtnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setMessage("هل انت متاكد من ان الاوردر انتهى ؟!")
-                                .setCancelable(false)
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                                        final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "done");
-                                        final Handler handler = new Handler();
-                                        Runnable runnableCode = new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (orderDone.isFinish()) {
-                                                    if (orderDone.getResponse().equals("1")) {
-                                                        Toast.makeText(getContext(), "تم الحفظ", Toast.LENGTH_SHORT).show();
-                                                        loaderManager.restartLoader(ORDER_LOADER_ID, null, OrderFragement.this);
-                                                        loaderManager.initLoader(ORDER_LOADER_ID, null, OrderFragement.this);
-                                                    } else {
-                                                        Toast.makeText(getContext(), "خطا", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                } else {
-                                                    handler.postDelayed(this, 100);
-                                                }
-                                            }
-                                        };
-                                        handler.post(runnableCode);
-                                    }
-                                })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        final AlertDialog alert = builder.create();
-                        alert.show();
-
-                    }
-                });
-                adapter.getItem(i).setSaveBtnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getContext(),OrderProgressFragment.class);
-                        intent.putExtra("num",adapter.getItem(postion).getOrderNum());
-                        startActivity(intent);
-                    }
-                });
-                adapter.getItem(i).setCostBtnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(getContext(),OrderCostsFragment.class);
-                        intent.putExtra("num",adapter.getItem(postion).getOrderNum());
-                        startActivity(intent);
-                    }
-                });
-            }
-        }
+        adapter.addAll(data);
+//
+//        if (data != null && !data.isEmpty()) {
+//            adapter.addAll(data);
+//            for (int i = 0; i < adapter.getCount(); i++) {
+//                final int postion = i;
+//
+//                adapter.getItem(i).setRequestBtnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//                        builder.setMessage("يرجى اضافة السبب للملاحظات اولا").setTitle("هل تريد تاجيل الاوردر لوجود مشكلة")
+//                                .setCancelable(false)
+//                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+//                                        final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "pending");
+//                                        final Handler handler = new Handler();
+//                                        Runnable runnableCode = new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                if (orderDone.isFinish()) {
+//                                                    if (orderDone.getResponse().equals("1")) {
+//                                                        Toast.makeText(getContext(), "Pended", Toast.LENGTH_SHORT).show();
+//                                                        loaderManager.restartLoader(ORDER_LOADER_ID, null, OrderFragement.this);
+//                                                        loaderManager.initLoader(ORDER_LOADER_ID, null, OrderFragement.this);
+//                                                    } else {
+//                                                        Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+//                                                    }
+//                                                } else {
+//                                                    handler.postDelayed(this, 100);
+//                                                }
+//                                            }
+//                                        };
+//                                        handler.post(runnableCode);
+//                                    }
+//                                })
+//                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+//                                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+//                                        dialog.cancel();
+//                                    }
+//                                });
+//                        final AlertDialog alert = builder.create();
+//                        alert.show();
+//
+//                    }
+//                });
+//                adapter.getItem(i).setAddNotesBtnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+//                        alertDialog.setTitle("اضافة للملاحظات");
+//                        LinearLayout container = new LinearLayout(getContext());
+//                        container.setOrientation(LinearLayout.VERTICAL);
+//                        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//                        lp.setMargins(20, 20, 20, 20);
+//                        final EditText input = new EditText(getContext());
+//                        input.setLayoutParams(lp);
+//                        input.setGravity(android.view.Gravity.TOP | android.view.Gravity.LEFT);
+//                        input.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+//                        input.setLines(1);
+//                        input.setMaxLines(1);
+//                        input.setText(adapter.getItem(postion).getNotes());
+//                        container.addView(input, lp);
+//
+//                        alertDialog.setView(container);
+//                        alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int whichButton) {
+//                                final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "updateNotes",input.getText().toString());
+//                                final Handler handler = new Handler();
+//                                Runnable runnableCode = new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        if (orderDone.isFinish()) {
+//                                            if (orderDone.getResponse().equals("1")) {
+//                                                Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT).show();
+//                                                loaderManager.restartLoader(ORDER_LOADER_ID, null, OrderFragement.this);
+//                                                loaderManager.initLoader(ORDER_LOADER_ID, null, OrderFragement.this);
+//                                            } else {
+//                                                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        } else {
+//                                            handler.postDelayed(this, 100);
+//                                        }
+//                                    }
+//                                };
+//                                handler.post(runnableCode);
+//                            }
+//                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int whichButton) {
+//                                Toast.makeText(getContext(), "canceled", Toast.LENGTH_SHORT).show();
+//                            }
+//                        }).show();
+//                    }
+//                });
+//                adapter.getItem(i).setDoneBtnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//                        builder.setMessage("هل انت متاكد من ان الاوردر انتهى ؟!")
+//                                .setCancelable(false)
+//                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+//                                        final OrderDone orderDone = new OrderDone(adapter.getItem(postion), "done");
+//                                        final Handler handler = new Handler();
+//                                        Runnable runnableCode = new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                if (orderDone.isFinish()) {
+//                                                    if (orderDone.getResponse().equals("1")) {
+//                                                        Toast.makeText(getContext(), "تم الحفظ", Toast.LENGTH_SHORT).show();
+//                                                        loaderManager.restartLoader(ORDER_LOADER_ID, null, OrderFragement.this);
+//                                                        loaderManager.initLoader(ORDER_LOADER_ID, null, OrderFragement.this);
+//                                                    } else {
+//                                                        Toast.makeText(getContext(), "خطا", Toast.LENGTH_SHORT).show();
+//                                                    }
+//                                                } else {
+//                                                    handler.postDelayed(this, 100);
+//                                                }
+//                                            }
+//                                        };
+//                                        handler.post(runnableCode);
+//                                    }
+//                                })
+//                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+//                                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+//                                        dialog.cancel();
+//                                    }
+//                                });
+//                        final AlertDialog alert = builder.create();
+//                        alert.show();
+//
+//                    }
+//                });
+//                adapter.getItem(i).setSaveBtnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        Intent intent = new Intent(getContext(),OrderProgressFragment.class);
+//                        intent.putExtra("num",adapter.getItem(postion).getOrderNum());
+//                        startActivity(intent);
+//                    }
+//                });
+//                adapter.getItem(i).setCostBtnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        Intent intent = new Intent(getContext(),OrderCostsFragment.class);
+//                        intent.putExtra("num",adapter.getItem(postion).getOrderNum());
+//                        startActivity(intent);
+//                    }
+//                });
+//            }
+//        }
     }
 
     @Override

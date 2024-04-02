@@ -8,8 +8,8 @@ android {
         applicationId "com.acpay.acapymembers"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,7 +59,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.gms:play-services-places:17.0.0'
     // dexter runtime permissions
-    implementation 'com.karumi:dexter:4.2.0'
+    implementation 'com.karumi:dexter:6.0.0'
 
     // ButterKnife view binding
     implementation 'com.jakewharton:butterknife:8.8.1'

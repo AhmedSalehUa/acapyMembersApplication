@@ -1,9 +1,12 @@
-package com.acpay.acapymembers;
+package com.acpay.acapymembers.Order;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.acpay.acapymembers.LocationProvider.HttpsTrustManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,58 +17,53 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
-public class JasonReponser extends  AsyncTask<String, Void, String> {
-    private static final String LOG_TAG = JasonReponser.class.getName();
-     private static String userId;
-    private static boolean finish=false;
+public class OrderUtilies {
+    private static final String LOG_TAG = OrderUtilies.class.getName();
 
-    public static boolean isFinish() {
-        return finish;
-    }
-
-    public static void setFinish(boolean finish) {
-        JasonReponser.finish = finish;
-    }
-
-    public static String getUserId() {
-        return userId;
-    }
-
-
-
-    public JasonReponser() {
+    public OrderUtilies() {
 
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-    }
-
-    @Override
-    protected String doInBackground(String... strings) {
-        return fetchData(strings[0]);
-    }
-
-    public static String fetchData(String location) {
-
-        URL urlR = getUrl(location);
+    public static List<Order> fetchData(String url) {
+        URL urlR = getUrl(url);
         String jasonResponse = null;
         try {
             jasonResponse = getHttpRequest(urlR);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Problem making the HTTP request.", e);
         }
+        List<Order> books = extractFeuterFromJason(jasonResponse);
+        return books;
+    }
 
-        userId=jasonResponse;
-        finish=true;
-        return jasonResponse;
+    public static List<Order> extractFeuterFromJason(String jason) {
+
+        final List<Order> list = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(jason);
+            JSONArray sa = jsonObject.names();
+            for (int i = 0; i < sa.length(); i++) {
+                JSONObject jsonArrayId = jsonObject.getJSONObject(sa.get(i).toString());
+                Order order = new Order(jsonArrayId.getString("order_num"),
+                        jsonArrayId.getString("date"),
+                        jsonArrayId.getString("time"),
+                        jsonArrayId.getString("place"),
+                        jsonArrayId.getString("location"),
+                        jsonArrayId.getString("fixType"),
+                        jsonArrayId.getString("num_of_matter"),
+                        jsonArrayId.getString("dliverCost"),
+                        jsonArrayId.getString("notes"),
+                        jsonArrayId.getString("files")
+                );
+                list.add(order);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     private static URL getUrl(String uri) {
@@ -130,5 +128,6 @@ public class JasonReponser extends  AsyncTask<String, Void, String> {
         }
         return output.toString();
     }
+
 
 }

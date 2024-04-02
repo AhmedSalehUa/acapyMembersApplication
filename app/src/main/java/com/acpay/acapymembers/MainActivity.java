@@ -70,6 +70,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -92,6 +100,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Dexter.withActivity(this).withPermissions(Arrays.asList(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.FOREGROUND_SERVICE,
+                Manifest.permission.INTERNET,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.CHANGE_NETWORK_STATE,
+                Manifest.permission.WRITE_SETTINGS,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE)).withListener(new MultiplePermissionsListener() {
+            @Override
+            public void onPermissionsChecked(MultiplePermissionsReport report) {
+                Log.e("permissions","done");
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                Log.e("permissionsFails",permissions.toString());
+            }
+        }).check();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         User user1 = new User(user.getDisplayName(), user.getUid());
 

@@ -1,4 +1,4 @@
-package com.acpay.acapymembers;
+package com.acpay.acapymembers.Order.progress;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -15,8 +15,8 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-public class JasonReponser extends  AsyncTask<String, Void, String> {
-    private static final String LOG_TAG = JasonReponser.class.getName();
+public class progressReponser extends  AsyncTask<String, Void, String> {
+    private static final String LOG_TAG = progressReponser.class.getName();
      private static String userId;
     private static boolean finish=false;
 
@@ -25,7 +25,7 @@ public class JasonReponser extends  AsyncTask<String, Void, String> {
     }
 
     public static void setFinish(boolean finish) {
-        JasonReponser.finish = finish;
+        progressReponser.finish = finish;
     }
 
     public static String getUserId() {
@@ -34,7 +34,7 @@ public class JasonReponser extends  AsyncTask<String, Void, String> {
 
 
 
-    public JasonReponser() {
+    public progressReponser() {
 
     }
 
@@ -54,7 +54,7 @@ public class JasonReponser extends  AsyncTask<String, Void, String> {
     }
 
     public static String fetchData(String location) {
-
+        Log.e(LOG_TAG, "the HTTP request."+location);
         URL urlR = getUrl(location);
         String jasonResponse = null;
         try {

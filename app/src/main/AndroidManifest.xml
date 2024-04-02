@@ -3,10 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.acpay.acapymembers">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission
@@ -20,6 +22,7 @@
         android:allowBackup="true"
         android:icon="@drawable/appbackground"
         android:label="@string/app_name"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -32,7 +35,8 @@
             android:value="false" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id"/>
+            android:value="@string/default_notification_channel_id" />
+
         <activity
             android:name=".LoginPage"
             android:label="@string/app_name"
@@ -48,14 +52,7 @@
             android:label="@string/app_name">
 
         </activity>
-        <activity
-            android:name=".bottomNavigationFragement.OrderProgressFragment"
-            android:label="@string/progress_fragment"
-            android:theme="@style/EditorTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
+
         <activity
             android:name=".bottomNavigationFragement.OrderCostsFragment"
             android:label="@string/cost_fragment"
@@ -64,8 +61,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
         <service android:name=".Background.BackgroundService" />
-        <receiver android:name=".GeofenceBroadcastReceiver"/>
+
     </application>
 
 </manifest>
